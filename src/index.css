@@ -108,3 +108,23 @@ body { font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; 
 
 .urdu { font-family: var(--font-urdu); direction: rtl; line-height: 2.4; }
 [lang='ur'] body { font-family: var(--font-sans), var(--font-urdu); }
+
+/* ---------- Dark mode: inverted brand surfaces (green ↔ white) ---------- */
+[data-accent='emerald'][data-theme='dark'] {
+  --hero-a: #f4faf7; --hero-b: #d6eee4; --hero-ink: #0b3b2e; --accent: #0f5c4d;
+  --brand: #e8f5ef; --brand-ink: #0b3b2e;
+}
+[data-accent='lavender'][data-theme='dark'] {
+  --hero-a: #f7f4fd; --hero-b: #e2d9f6; --hero-ink: #3b2580; --accent: #5b3fa0;
+  --brand: #efe9fb; --brand-ink: #3b2580;
+}
+[data-accent='teal'][data-theme='dark'] {
+  --hero-a: #f1faf8; --hero-b: #d1eee8; --hero-ink: #0b5e57; --accent: #0e7c72;
+  --brand: #e4f6f2; --brand-ink: #0b5e57;
+}
+/* Text and glass tints inside hero cards follow the hero ink instead of fixed white. */
+[data-theme='dark'] .hero [class*='text-white'] { color: color-mix(in srgb, var(--hero-ink) 72%, transparent); }
+[data-theme='dark'] .hero [class*='bg-white/'] { background-color: color-mix(in srgb, var(--hero-ink) 9%, transparent); }
+[data-theme='dark'] .hero svg[class*='text-black'] { color: var(--hero-ink); opacity: .16; }
+[data-theme='dark'] .hero.pattern, [data-theme='dark'] .hero .pattern { --pattern-tint: var(--hero-ink); }
+[data-theme='dark'] .hero { box-shadow: 0 10px 40px -12px color-mix(in srgb, var(--hero-b) 35%, transparent); }
