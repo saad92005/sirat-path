@@ -15,7 +15,7 @@ A complete, offline-first Muslim companion that installs on your phone and costs
 | **Today** | Greeting, Hijri date, next-prayer countdown over a skyline hero, Quran goal ring, morning/evening azkar status, upcoming events, continue reading, daily reflection, Name of the Day |
 | **Quran** | 114 surahs (verified Tanzil Uthmani text), Pickthall translation, verse or Mushaf mode, Hifz mode, bookmarks, notes, last-read position, Khatm planner, share-as-image, keyboard shortcuts |
 | **Study** | Tajweed colour mode, word-by-word (Arabic, transliteration, meaning), 5 tafsirs (EN/UR/AR), 5 Urdu translations, all loaded on demand and cached offline |
-| **Ask Islam (AI)** | Optional on-device AI (WebLLM, private, no server): answers only from retrieved verified ayahs, citations validated, clearly labelled as AI reflection. Falls back to sources-only on devices without WebGPU |
+| **Ask Islam (AI)** | Free cloud AI (Groq, via a Vercel function; the key is never exposed) or optional on-device AI (WebLLM, private): answers only from retrieved verified ayahs, citations validated, clearly labelled as AI reflection. Falls back to sources-only on devices without WebGPU |
 | **Audio** | 5 reciters, continuous play, repeat per ayah, speed 0.75–1.5×, sleep timer, offline surah downloads, lock-screen metadata |
 | **Salah** | Local prayer calculation (12 methods, Hanafi/Shafi Asr, adjustments), Jumuʿah, daily tracker (on time / jamaʿah / late / missed), 7-day history, monthly printable timetable, reminders, adhan sound, calendar (.ics) export so alarms work even when the app is closed |
 | **Duas & Azkar** | 14 categories; every dua shows its Quran or hadith reference; azkar sessions with tap counters and daily completion |

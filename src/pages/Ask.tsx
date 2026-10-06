@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, Bot, Cpu, Download, Info, Loader2, Search, ShieldCheck } from 'lucide-react'
+import { AlertTriangle, Bot, Cloud, Cpu, Download, Info, Loader2, Search, ShieldCheck, ShieldOff } from 'lucide-react'
 import { useQuran } from '../lib/quran'
 import { search } from '../lib/search'
-import { hasWebGPU, isModelCached, isModelLoaded, loadLocalModel, LOCAL_MODELS, LocalAIProvider, validateCitations, type Source } from '../lib/ai'
+import { FreeRemoteAIProvider, hasWebGPU, isModelCached, isModelLoaded, loadLocalModel, LOCAL_MODELS, LocalAIProvider, validateCitations, type Source } from '../lib/ai'
 import Loading from '../components/Loading'
 import { PageHeader } from '../components/ui'
 
 const STOP = new Set('what does the quran say about is are a an of to in on for and or how why who when do does i me my you we our it be with from by as at this that tell explain allah islam'.split(' '))
 const MODEL_KEY = 'sirat-ai-model'
+const MODE_KEY = 'sirat-ai-mode'
+type Mode = 'cloud' | 'local' | 'off'
 
 export default function Ask() {
   const { data, error } = useQuran()
@@ -21,6 +23,9 @@ export default function Ask() {
   const [ready, setReady] = useState(() => isModelLoaded() === model)
   const [answer, setAnswer] = useState<{ text: string; done: boolean; valid: string[]; invalid: string[]; declined: boolean } | null>(null)
   const [aiErr, setAiErr] = useState<string | null>(null)
+  const [mode, setModeState] = useState<Mode>(() => (localStorage.getItem(MODE_KEY) as Mode) ?? 'cloud')
+  const [usedModel, setUsedModel] = useState<string | null>(null)
+  const setMode = (m: Mode) => { setModeState(m); try { localStorage.setItem(MODE_KEY, m) } catch { /* ignore */ } }
 
   useEffect(() => { hasWebGPU().then(setGpu) }, [])
   useEffect(() => { isModelCached(model).then(setCached); setReady(isModelLoaded() === model) }, [model])
@@ -51,15 +56,18 @@ export default function Ask() {
 
   // Step 2 — generation grounded in the retrieved sources, Step 3 — citation validation.
   useEffect(() => {
-    if (!ready || !data || !submitted || hits.length === 0) { setAnswer(null); return }
+    const active = mode === 'cloud' || (mode === 'local' && ready)
+    if (!active || !data || !submitted || hits.length === 0) { setAnswer(null); return }
     let live = true
     const sources: Source[] = hits.slice(0, 6).map(({ s, a }) => ({ ref: `${s}:${a}`, text: data.surahs[s - 1].ayahs[a - 1][1] }))
-    setAnswer({ text: '', done: false, valid: [], invalid: [], declined: false }); setAiErr(null)
-    LocalAIProvider.explain(submitted, sources, (t) => live && setAnswer({ text: t, done: false, valid: [], invalid: [], declined: false }))
-      .then((full) => { if (!live) return; const v = validateCitations(full, sources); setAnswer({ text: v.cleaned, done: true, valid: v.valid, invalid: v.invalid, declined: v.declined }) })
-      .catch((e) => live && setAiErr((e as Error).message))
+    const finish = (full: string) => { if (!live) return; const v = validateCitations(full, sources); setAnswer({ text: v.cleaned, done: true, valid: v.valid, invalid: v.invalid, declined: v.declined }) }
+    setAnswer({ text: '', done: false, valid: [], invalid: [], declined: false }); setAiErr(null); setUsedModel(null)
+    const run = mode === 'cloud'
+      ? FreeRemoteAIProvider.explain(submitted, sources.map((x) => x.ref)).then((r) => { if (live) setUsedModel(r.model); return r.answer })
+      : LocalAIProvider.explain(submitted, sources, (t) => live && setAnswer({ text: t, done: false, valid: [], invalid: [], declined: false }))
+    run.then(finish).catch((e) => { if (live) { setAnswer(null); setAiErr((e as Error).message) } })
     return () => { live = false }
-  }, [ready, submitted, hits, data])
+  }, [mode, ready, submitted, hits, data])
 
   if (!data) return <Loading error={error} />
   const rejected = answer?.done && !answer.declined && answer.valid.length === 0
@@ -72,15 +80,22 @@ export default function Ask() {
         <button className="btn shrink-0"><Search size={16} />Ask</button>
       </form>
 
-      {/* AI status */}
-      <section className="card mt-4 p-4 text-sm">
-        {gpu === null ? <p className="text-muted">Checking device…</p> : !gpu ? (
-          <p className="flex gap-2 text-muted"><Info size={18} className="shrink-0 text-gold" />Local AI is unavailable on this device (no WebGPU). You still get the most relevant verified Quranic sources below. Questions never leave your device.</p>
+      {/* AI mode */}
+      <section className="card mt-4 space-y-3 p-4 text-sm">
+        <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-surface-2 p-1">
+          {([['cloud', Cloud, 'Cloud AI'], ['local', Cpu, 'On-device'], ['off', ShieldOff, 'Sources only']] as const).map(([m, Icon, label]) => (
+            <button key={m} onClick={() => setMode(m)} className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium transition sm:text-sm ${mode === m ? 'bg-surface text-brand shadow-sm' : 'text-muted'}`}><Icon size={15} />{label}</button>
+          ))}
+        </div>
+        {mode === 'cloud' && <p className="flex gap-2 text-muted"><Cloud size={18} className="shrink-0 text-brand" /><span>Free cloud AI (Groq, open-weight models). Your <b>question</b> and the matched verse references are sent to Groq to write a short explanation; nothing else leaves your device. Answers are checked against the verified sources.</span></p>}
+        {mode === 'off' && <p className="flex gap-2 text-muted"><Info size={18} className="shrink-0 text-gold" />No AI — you'll see the most relevant verified Quranic sources only. Nothing leaves your device.</p>}
+        {mode === 'local' && (gpu === null ? <p className="text-muted">Checking device…</p> : !gpu ? (
+          <p className="flex gap-2 text-muted"><Info size={18} className="shrink-0 text-gold" />Local AI is unavailable on this device (no WebGPU). Choose Cloud AI, or use Sources only.</p>
         ) : ready ? (
           <p className="flex items-center gap-2 text-brand"><Cpu size={18} />On-device AI is ready · {LOCAL_MODELS.find((m) => m.id === model)?.label}. Runs privately on your device.</p>
         ) : (
           <div className="space-y-3">
-            <p className="flex gap-2"><Bot size={18} className="shrink-0 text-brand" /><span>Optional: enable an AI that runs <b>entirely on your device</b> to summarise the verses it finds. No account and no server, and your questions stay private.</span></p>
+            <p className="flex gap-2"><Bot size={18} className="shrink-0 text-brand" /><span>Runs <b>entirely on your device</b>: no server, fully private. Downloaded once, then works offline.</span></p>
             <div className="flex flex-wrap gap-2">
               <select className="input w-auto py-2" value={model} onChange={(e) => setModel(e.target.value)} disabled={!!loading}>
                 {LOCAL_MODELS.map((m) => <option key={m.id} value={m.id}>{m.label} · {m.size}</option>)}
@@ -90,10 +105,10 @@ export default function Ask() {
             {loading && (
               <div><div className="h-2 overflow-hidden rounded-full bg-surface-2"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${Math.round(loading.p * 100)}%` }} /></div><p className="mt-1 truncate text-xs text-muted">{loading.text}</p></div>
             )}
-            <p className="text-xs text-muted">Downloaded once, then cached for offline use. Licence: {LOCAL_MODELS.find((m) => m.id === model)?.licence}. Works best on Chrome/Edge with a recent GPU.</p>
+            <p className="text-xs text-muted">Licence: {LOCAL_MODELS.find((m) => m.id === model)?.licence}. Works best on Chrome/Edge with a recent GPU.</p>
           </div>
-        )}
-        {aiErr && <p className="mt-2 text-red-500">{aiErr}</p>}
+        ))}
+        {aiErr && <p className="text-red-500">{aiErr} — the verified sources below are still available.</p>}
       </section>
 
       {/* AI answer — clearly labelled and separated from sources */}
@@ -103,12 +118,13 @@ export default function Ask() {
           {rejected ? (
             <p className="flex gap-2 text-sm"><AlertTriangle size={16} className="shrink-0 text-gold" />The AI response did not cite the provided sources, so it was withheld. Please read the verified sources below.</p>
           ) : (
-            <p className="whitespace-pre-wrap leading-relaxed">{answer.text || '…'}{!answer.done && <span className="ms-1 inline-block h-4 w-1.5 animate-pulse bg-brand align-middle" />}</p>
+            <p className="whitespace-pre-wrap leading-relaxed">{answer.text || (mode === 'cloud' ? 'Thinking…' : '…')}{!answer.done && <span className="ms-1 inline-block h-4 w-1.5 animate-pulse bg-brand align-middle" />}</p>
           )}
           {answer.done && !rejected && (
             <p className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted"><ShieldCheck size={14} className="text-brand" />Citations checked against retrieved sources:
               {answer.valid.map((r) => <Link key={r} to={`/quran/${r.split(':')[0]}#${r.split(':')[1]}`} className="chip text-brand">{r}</Link>)}
               {answer.invalid.length > 0 && <span className="text-gold">· removed {answer.invalid.length} unsupported citation(s)</span>}
+              {usedModel && <span>· {mode === 'cloud' ? 'Groq' : 'on-device'} · {usedModel}</span>}
             </p>
           )}
         </section>

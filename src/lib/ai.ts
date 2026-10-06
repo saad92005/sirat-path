@@ -93,3 +93,18 @@ export function validateCitations(answer: string, sources: Source[]) {
   const declined = /don't have enough reliable sources/i.test(answer)
   return { cleaned, valid: [...new Set(cited.filter((c) => allowed.has(c)))], invalid, declined }
 }
+
+/**
+ * Free remote provider: our own Vercel function proxies Groq's free tier. Only the question and the
+ * verse references are sent; the server re-reads verse text from verified data.
+ */
+export const FreeRemoteAIProvider = {
+  id: 'cloud',
+  label: 'Cloud AI (Groq, free)',
+  async explain(question: string, refs: string[]): Promise<{ answer: string; model: string | null }> {
+    const r = await fetch('/api/ask', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ question, refs }) })
+    const d = await r.json().catch(() => ({ error: `HTTP ${r.status}` }))
+    if (!r.ok) throw new Error(d.error ?? `HTTP ${r.status}`)
+    return d
+  },
+}

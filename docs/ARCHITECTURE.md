@@ -35,6 +35,7 @@ Backup/restore is a JSON export in Settings. Optional cloud sync (Supabase free 
 
 - **AI** — `src/lib/ai.ts` defines `AIProvider` with `NoAIProvider` (default) and `LocalAIProvider` (WebLLM in a Web Worker, opt-in). Pipeline on the Ask page:
   question → on-device retrieval of verified ayahs (MiniSearch) → model prompted to use *only* those sources and cite `[s:a]` → **citation validation** (invented references are stripped; uncited answers are withheld) → displayed in a box labelled "AI reflection — not Quran, hadith or a ruling", with the verified sources listed separately below. The AI runtime (~6 MB) and model weights are only downloaded after the user opts in.
+- **Cloud AI (default AI mode)** — `FreeRemoteAIProvider` → Vercel function `api/ask.ts` → Groq free tier. It uses the same grounding and citation-validation pipeline; the server re-derives the source text from references. Users can switch to On-device or Sources only on the Ask page.
 - **Cloud (optional)** — `src/lib/cloud.ts` lazy-loads Supabase only when configured. Sync is two-way with last-write-wins and tombstones, using a per-record hash so only changed rows are sent; auto-increment tables get device-independent `syncKey`s. Schema and RLS: `supabase/schema.sql`.
 - **Study layer (optional)** — `src/lib/qurancom.ts`: tajweed (parsed into safe text segments, never injected as HTML), word-by-word, tafsir (HTML → text), extra translations.
 - **Audio** — `src/lib/audio.ts` builds URLs from a reciter id; swapping the CDN is a one-line change.

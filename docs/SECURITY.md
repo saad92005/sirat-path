@@ -7,6 +7,18 @@
 - **XSS:** all content is rendered through React, with no `dangerouslySetInnerHTML`. Imported backups are validated before they're written.
 - **Dependencies:** run `npm audit` periodically.
 
+## Cloud AI (Groq)
+
+- `GROQ_API_KEY` is stored only as an **encrypted Vercel environment variable**. It's never in the client bundle or the repo; CI can check this with `git grep gsk_`.
+- The browser calls our own function `/api/ask`, which then calls Groq. The function:
+  - only accepts the app's own origins (other sites get 403)
+  - validates input (question 3–500 characters, up to 8 references in `s:a` format)
+  - rate-limits each IP (best effort)
+  - looks up verse text from the deployment's own verified `quran.json`, so clients can't inject fake sources
+- Only the question and the verse references are sent. Journal, notes and other personal data are never sent.
+- The answer is checked again in the browser: invented citations are removed and uncited answers are withheld.
+- **If a key is ever exposed, regenerate it** at console.groq.com and run `vercel env rm GROQ_API_KEY` and then `vercel env add GROQ_API_KEY`.
+
 ## Optional cloud sync (Supabase)
 
 - Only the public **anon** key goes in the client. The service-role key is never used.

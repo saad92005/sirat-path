@@ -19,6 +19,7 @@
 | Notification / Geolocation / DeviceOrientation APIs | Reminders, location, compass | Built in | Optional | Yes | No | No guaranteed delivery once the app is closed; some devices lack a compass | Manual location, bearing shown |
 | Quran.com API v4 | Tajweed colours, word-by-word, tafsir, Urdu translations (on demand) | Public API | Optional | Yes | No | Needs internet the first time each surah or ayah is opened, then cached | Hide the study tools |
 | WebLLM (@mlc-ai/web-llm) + Qwen2.5-0.5B / Llama-3.2-1B | On-device AI summaries | Yes (Apache-2.0; model licences Apache-2.0 / Llama 3.2 Community) | Optional, opt-in | Yes | No | Needs WebGPU (recent Chrome or Edge); a one-time 300–700 MB download | Retrieval-only answers (default) |
+| Groq API (free tier) + Vercel Function `api/ask.ts` | Cloud AI explanations (gpt-oss-120b, fallback gpt-oss-20b) | Open-weight models | Optional (default AI mode) | Free tier | No | Rate limits on the free tier; the app also rate-limits 20 questions per 10 min per IP | On-device AI or Sources only |
 | Supabase (free tier) | Optional accounts, sync, admin | Yes (Apache-2.0) | Optional | Free plan | No | 500 MB DB, project pauses after a week of inactivity, email rate limits | Guest mode + JSON export |
 | Wikimedia Commons Adhan (CC BY-SA 4.0) | Optional adhan sound (streamed) | Openly licensed | Optional | Yes | No | Needs internet | Notification only |
 | Playwright, tsx | Tests | Yes (Apache-2.0) | Dev, optional | Yes | No | — | — |
