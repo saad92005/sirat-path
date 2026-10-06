@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+@import '@fontsource/amiri-quran/400.css';
+@import '@fontsource-variable/inter';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+@theme {
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+  --font-quran: 'Amiri Quran', 'Amiri', serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-gold: var(--gold);
+}
+
+:root {
+  --bg: #f6f3ec;
+  --surface: #fffdf8;
+  --surface-2: #efe9dc;
+  --ink: #17231f;
+  --muted: #66746e;
+  --line: #e2dccd;
+  --brand: #0f5c4d;
+  --brand-ink: #ffffff;
+  --gold: #b0883a;
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --bg: #08130f;
+  --surface: #0f1f1a;
+  --surface-2: #152a23;
+  --ink: #e9efe9;
+  --muted: #8fa39a;
+  --line: #1f362e;
+  --brand: #2fa58a;
+  --brand-ink: #04110d;
+  --gold: #d8b261;
+  color-scheme: dark;
+}
+
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; }
+
+.quran { font-family: var(--font-quran); direction: rtl; line-height: 2.3; }
+
+.pattern {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%23d8b261' stroke-opacity='.18'%3E%3Cpath d='M28 4l7 17 17 7-17 7-7 17-7-17-17-7 17-7z'/%3E%3Ccircle cx='28' cy='28' r='6'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.ayah-num {
+  display: inline-grid; place-items: center; min-width: 2.1em; height: 2.1em;
+  font-family: var(--font-sans); font-size: .55em; color: var(--gold);
+  border: 1.5px solid var(--gold); border-radius: 999px; margin: 0 .3em; vertical-align: middle;
+}
+
+.fade-in { animation: fade .35s ease both; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+@layer components {
+  .card { @apply rounded-2xl border border-line bg-surface; }
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-brand-ink transition active:scale-[.97] hover:brightness-110 disabled:opacity-50; }
+  .btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5 text-sm font-medium transition active:scale-[.97] hover:bg-surface-2; }
+  .icon-btn { @apply inline-grid size-10 place-items-center rounded-full text-muted transition hover:bg-surface-2 hover:text-ink active:scale-90; }
+  .input { @apply w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/20; }
+  .chip { @apply inline-flex items-center gap-1 rounded-full bg-surface-2 px-3 py-1 text-xs font-medium text-muted; }
+  .h-page { @apply text-2xl font-bold tracking-tight; }
+}
