@@ -11,6 +11,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false,
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'Sirat Path — Walk the straight path, step by step',
@@ -32,6 +33,10 @@ export default defineConfig({
         // The optional on-device AI runtime (~6 MB) is cached on first use instead of precached.
         globIgnores: ['**/ai-worker-*.js', '**/lib-*.js'],
         navigateFallback: '/index.html',
+        navigateFallbackDenylist: [/^\/api\//],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
         runtimeCaching: [
           {
             urlPattern: ({ url }) => /\/assets\/(ai-worker|lib)-.*\.js$/.test(url.pathname),
