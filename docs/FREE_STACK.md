@@ -17,7 +17,11 @@
 | hadith-api (jsDelivr CDN) | Hadith (fetched on demand) | Yes (repo is open source) | Optional | Yes | No | Needs internet the first time each book is opened | sunnah.com links |
 | Browser Intl (Umm al-Qura) | Hijri dates | Built in | Yes | Yes | No | ±1 day vs local sighting (adjustable) | — |
 | Notification / Geolocation / DeviceOrientation APIs | Reminders, location, compass | Built in | Optional | Yes | No | No guaranteed delivery once the app is closed; some devices lack a compass | Manual location, bearing shown |
-| Playwright | End-to-end tests | Yes (Apache-2.0) | Dev, optional | Yes | No | — | — |
+| Quran.com API v4 | Tajweed colours, word-by-word, tafsir, Urdu translations (on demand) | Public API | Optional | Yes | No | Needs internet the first time each surah or ayah is opened, then cached | Hide the study tools |
+| WebLLM (@mlc-ai/web-llm) + Qwen2.5-0.5B / Llama-3.2-1B | On-device AI summaries | Yes (Apache-2.0; model licences Apache-2.0 / Llama 3.2 Community) | Optional, opt-in | Yes | No | Needs WebGPU (recent Chrome or Edge); a one-time 300–700 MB download | Retrieval-only answers (default) |
+| Supabase (free tier) | Optional accounts, sync, admin | Yes (Apache-2.0) | Optional | Free plan | No | 500 MB DB, project pauses after a week of inactivity, email rate limits | Guest mode + JSON export |
+| Wikimedia Commons Adhan (CC BY-SA 4.0) | Optional adhan sound (streamed) | Openly licensed | Optional | Yes | No | Needs internet | Notification only |
+| Playwright, tsx | Tests | Yes (Apache-2.0) | Dev, optional | Yes | No | — | — |
 | GitHub | Code hosting | — | Yes | Free plan | No | — | GitLab |
 | Vercel Hobby | Hosting | — | For a public URL | Free plan | No | Non-commercial use, bandwidth caps | Cloudflare Pages, GitHub Pages |
 

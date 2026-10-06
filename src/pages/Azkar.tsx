@@ -8,6 +8,7 @@ import { tap } from '../lib/feedback'
 import DuaCard from '../components/DuaCard'
 import Loading from '../components/Loading'
 import { PageHeader, Ring } from '../components/ui'
+import { useT } from '../lib/i18n'
 
 function defaultSession() {
   const h = new Date().getHours()
@@ -18,6 +19,7 @@ export default function Azkar() {
   const { data, error } = useQuran()
   const [session, setSession] = useState<string>(defaultSession)
   const day = today()
+  const t = useT()
   const logs = useLiveQuery(() => db.azkar.where('day').equals(day).toArray(), [day]) ?? []
   if (!data) return <Loading error={error} />
 
@@ -36,7 +38,7 @@ export default function Azkar() {
 
   return (
     <div>
-      <PageHeader title="Azkar" subtitle="Daily remembrance with progress" />
+      <PageHeader title={t('azkar')} subtitle={t('azkarSubtitle')} />
       <div className="mb-5 grid grid-cols-2 gap-2.5 md:grid-cols-4">
         {AZKAR_SESSIONS.map((s) => {
           const l = logs.find((x) => x.session === s.id)
@@ -53,7 +55,7 @@ export default function Azkar() {
       <div className="card mb-5 flex items-center gap-4 p-4">
         <Ring pct={pct} size={58}><span className="text-xs font-bold">{finished}/{items.length}</span></Ring>
         <div className="flex-1">
-          <p className="font-semibold">{pct >= 1 ? 'Completed — may Allah accept it 🤍' : `${items.length - finished} remaining`}</p>
+          <p className="font-semibold">{pct >= 1 ? t('completedAccept') : `${items.length - finished} ${t('remaining')}`}</p>
           <p className="text-xs text-muted">Tap the button on each card to count. Progress is saved for today.</p>
         </div>
         {log && <button className="icon-btn" title="Reset" onClick={() => db.azkar.delete(`${day}-${session}`)}><RotateCcw size={17} /></button>}

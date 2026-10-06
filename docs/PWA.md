@@ -9,5 +9,7 @@
 ## Honest limitations
 
 - **Reminders** use the Notification API and fire while the app is open or running in the background. Without a push server, browsers (especially iOS) don't guarantee delivery after the app is closed.
+  **Free workaround (built in):** Salah → *Add to calendar* exports the next 30 days of prayer times as an `.ics` file. The phone's calendar app then raises the alarms even when Sirat Path is closed. True Web Push would need an always-on scheduler, and free hosting tiers don't offer per-minute cron, so it's intentionally not used.
+- **Adhan sound** plays when a reminder fires while the app is open. Browsers may block autoplay until you've interacted with the page.
 - **The compass** needs a magnetometer; desktops show the numeric bearing instead.
 - **Background audio** depends on the OS. Lock-screen metadata is provided through the Media Session API.

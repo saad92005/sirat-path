@@ -12,7 +12,19 @@ npm run data       # regenerate public/data/quran.json from data-src/
 
 ## Environment variables
 
-None are required. The core app has no keys or secrets.
+None are required. Copy `.env.example` to `.env` only if you want optional cloud sync.
+
+## Optional: accounts & cloud sync (Supabase free tier, no credit card)
+
+1. Create a free project at supabase.com.
+2. In **SQL Editor**, run `supabase/schema.sql`. It creates profiles, `user_records` and `content_reports`, all with Row Level Security.
+3. In **Project Settings → API**, copy the Project URL and the `anon` public key into `.env` (and into the Vercel project's environment variables):
+   `VITE_SUPABASE_URL=…` and `VITE_SUPABASE_ANON_KEY=…`. Never use the service-role key in the app.
+4. In **Authentication → URL configuration**, set the Site URL to your deployment (e.g. `https://siratpath.vercel.app`) and add `/account` as a redirect URL.
+5. Optional: enable the Google provider in **Authentication → Providers**. This needs a free Google Cloud OAuth client.
+6. To make yourself an admin, run the `update public.profiles …` line at the bottom of the schema.
+
+Email confirmation uses Supabase's built-in mailer, which is free but rate-limited. Without custom SMTP, expect a few emails per hour.
 
 ## Deploy free on Vercel
 

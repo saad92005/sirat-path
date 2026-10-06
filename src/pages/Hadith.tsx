@@ -5,6 +5,7 @@ import { Bookmark, BookmarkCheck, ChevronRight, Copy, Image, Search, WifiOff } f
 import { db, toggleSaved } from '../lib/db'
 import { shareAyahImage } from '../lib/shareImage'
 import { PageHeader } from '../components/ui'
+import ReportButton from '../components/ReportButton'
 
 // Hadith are fetched on demand from the open hadith-api project (jsDelivr CDN) and cached by the
 // service worker once viewed. Nothing is bundled with the app. Translations remain the work of
@@ -138,6 +139,7 @@ function HadithCard({ h, ar, c, s, name }: { h: H; ar?: string; c: string; s: st
         <button className={`icon-btn size-9 ${saved ? 'text-gold' : ''}`} aria-label="Save" onClick={() => toggleSaved('hadith', key, `/hadith/${c}/${s}#h${h.hadithnumber}`)}>{saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}</button>
         <button className="icon-btn size-9" aria-label="Copy" onClick={() => navigator.clipboard?.writeText(`${ar ? ar + '\n\n' : ''}${h.text}\n— ${ref}`)}><Copy size={17} /></button>
         {ar && <button className="icon-btn size-9" aria-label="Share as image" onClick={() => shareAyahImage(ar.length > 500 ? ar.slice(0, 500) + '…' : ar, h.text.length > 400 ? h.text.slice(0, 400) + '…' : h.text, ref)}><Image size={17} /></button>}
+        <ReportButton item={`Hadith: ${ref}`} />
       </div>
       {ar && <p className="quran mt-4 text-right text-[22px] leading-[2.1]">{ar}</p>}
       <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed">{h.text}</p>

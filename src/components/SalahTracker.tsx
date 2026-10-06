@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { Check, Clock3, Users, X } from 'lucide-react'
 import { db, today, type SalahLog } from '../lib/db'
 import { tap } from '../lib/feedback'
+import { useT, type StrKey } from '../lib/i18n'
 
 const FARD = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const
 const LABEL: Record<string, string> = { fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' }
@@ -12,6 +13,7 @@ const STYLE: Record<string, string> = {
 const ICON = { ontime: Check, jamaah: Users, late: Clock3, missed: X }
 
 export default function SalahTracker() {
+  const t = useT()
   const day = today()
   const week = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d })
   const logs = useLiveQuery(() => db.salah.where('day').anyOf(week.map((d) => d.toLocaleDateString('en-CA'))).toArray()) ?? []
@@ -31,8 +33,8 @@ export default function SalahTracker() {
   return (
     <section className="card p-5">
       <div className="flex items-center">
-        <p className="flex-1 font-semibold">Today’s Salah</p>
-        <span className="chip">{prayedToday}/5 prayed</span>
+        <p className="flex-1 font-semibold">{t('todaysSalah')}</p>
+        <span className="chip">{prayedToday}/5 {t('prayed')}</span>
       </div>
       <div className="mt-4 grid grid-cols-5 gap-2">
         {FARD.map((p) => {
@@ -43,12 +45,12 @@ export default function SalahTracker() {
               <span className={`grid size-12 place-items-center rounded-2xl border transition ${st ? `${STYLE[st]} border-transparent` : 'border-dashed border-line text-muted'}`}>
                 {Icon ? <Icon size={20} /> : <span className="text-lg">○</span>}
               </span>
-              {p === 'dhuhr' && isFriday ? 'Jumuʿah' : LABEL[p]}
+              {p === 'dhuhr' && isFriday ? t('jumuah') : t(p as StrKey)}
             </button>
           )
         })}
       </div>
-      <p className="mt-3 text-xs text-muted">Tap to cycle: on time → in jamaʿah → late → missed → clear.</p>
+      <p className="mt-3 text-xs text-muted">{t('tapToCycle')}</p>
 
       <div className="mt-5 overflow-x-auto">
         <table className="w-full text-center text-[11px]">
@@ -56,7 +58,7 @@ export default function SalahTracker() {
           <tbody>
             {FARD.map((p) => (
               <tr key={p}>
-                <td className="pe-2 text-start text-muted">{LABEL[p]}</td>
+                <td className="pe-2 text-start text-muted">{t(p as StrKey)}</td>
                 {week.map((d) => {
                   const st = get(d.toLocaleDateString('en-CA'), p)?.status
                   return <td key={+d} className="p-0.5"><span className={`mx-auto block size-4 rounded-md ${st ? STYLE[st] : 'bg-surface-2'}`} /></td>

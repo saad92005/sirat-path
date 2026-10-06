@@ -7,13 +7,14 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useQuran, TOTAL_AYAHS, fromAbs } from '../lib/quran'
 import { useSettings } from '../lib/settings'
-import { computeTimes, fmtCountdown, fmtTime, hijri, nextPrayer, PRAYERS, PRAYER_LABEL } from '../lib/prayer'
+import { computeTimes, fmtCountdown, fmtTime, hijri, nextPrayer, PRAYERS } from '../lib/prayer'
 import { db, today } from '../lib/db'
 import { hijriParts, upcomingEvents } from '../lib/hijri'
 import { NAMES } from '../lib/names'
 import { streakOf } from '../lib/stats'
 import { shareAyahImage } from '../lib/shareImage'
 import Skyline from '../components/Skyline'
+import { useT, type StrKey } from '../lib/i18n'
 import { Ring } from '../components/ui'
 
 function useNow(ms = 1000) {
@@ -41,6 +42,8 @@ const FEATURES = [
 
 export default function Home() {
   const s = useSettings()
+  const t = useT()
+  const pl = (p: string) => t(p as StrKey)
   const now = useNow()
   const { data } = useQuran()
   const day = today()
@@ -69,7 +72,7 @@ export default function Home() {
       <div className="flex items-end justify-between">
         <div>
           <p className="text-sm text-muted">{now.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })} · {hijri(now, s.hijriOffset)}</p>
-          <h1 className="mt-0.5 text-2xl font-bold tracking-tight md:text-3xl">Assalamu Alaikum{s.name ? `, ${s.name}` : ''}</h1>
+          <h1 className="mt-0.5 text-2xl font-bold tracking-tight md:text-3xl">{t('greeting')}{s.name ? `, ${s.name}` : ''}</h1>
         </div>
         <span className="quran hidden text-3xl text-gold md:block">السَّلَامُ عَلَيْكُمْ</span>
       </div>
@@ -82,15 +85,15 @@ export default function Home() {
           {next && times ? (
             <div className="relative">
               <div className="flex items-center gap-2 text-sm text-white/70"><MapPin size={14} />{s.location!.label}</div>
-              <p className="mt-5 text-sm font-medium uppercase tracking-[.2em] text-accent">{PRAYER_LABEL[next.name]} in</p>
+              <p className="mt-5 text-sm font-medium uppercase tracking-[.2em] text-accent">{pl(next.name)} {t('in')}</p>
               <p className="mt-1 text-5xl font-bold tabular-nums tracking-tight md:text-6xl">{fmtCountdown(next.at.getTime() - now.getTime()).replace(/s$/, '')}</p>
-              <p className="mt-1 text-sm text-white/70">at {fmtTime(next.at)}</p>
+              <p className="mt-1 text-sm text-white/70">{t('at')} {fmtTime(next.at)}</p>
               <div className="relative mt-16 grid grid-cols-5 gap-1.5 md:mt-20">
                 {PRAYERS.filter((p) => p !== 'sunrise').map((p) => {
                   const isNext = p === next.name
                   return (
                     <div key={p} className={`rounded-2xl px-1 py-2.5 text-center backdrop-blur-md transition ${isNext ? 'bg-accent text-[var(--hero-a)]' : 'bg-white/12'}`}>
-                      <p className="text-[11px] font-medium">{PRAYER_LABEL[p]}</p>
+                      <p className="text-[11px] font-medium">{p === 'dhuhr' && now.getDay() === 5 ? t('jumuah') : pl(p)}</p>
                       <p className="text-[13px] font-bold tabular-nums">{fmtTime(times.times[p]).replace(/\s?[AP]M/i, '')}</p>
                       {prayed(p) && <Check size={12} className="mx-auto mt-0.5" />}
                     </div>
@@ -100,9 +103,9 @@ export default function Home() {
             </div>
           ) : (
             <div className="relative pb-20">
-              <p className="mt-2 text-2xl font-semibold">Set your location</p>
-              <p className="mt-1 max-w-xs text-sm text-white/70">Prayer times are calculated on your device. Nothing is sent anywhere.</p>
-              <Link to="/prayer" className="mt-5 inline-flex rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-[var(--hero-a)]">Set location</Link>
+              <p className="mt-2 text-2xl font-semibold">{t('setLocation')}</p>
+              <p className="mt-1 max-w-xs text-sm text-white/70">{t('setLocationHint')}</p>
+              <Link to="/prayer" className="mt-5 inline-flex rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-[var(--hero-a)]">{t('setLocation')}</Link>
             </div>
           )}
         </section>
@@ -112,17 +115,17 @@ export default function Home() {
           <Link to="/insights" className="card flex items-center gap-4 p-4 transition hover:border-brand lg:p-5">
             <Ring pct={goalPct} size={56}><span className="text-sm font-bold tabular-nums">{Math.round(goalPct * 100)}%</span></Ring>
             <div className="min-w-0">
-              <p className="text-xs text-muted">Quran goal</p>
-              <p className="font-semibold">{todayCount}/{s.dailyAyahGoal} ayahs</p>
-              <p className="text-xs text-muted">🔥 {streak} day streak</p>
+              <p className="text-xs text-muted">{t('quranGoal')}</p>
+              <p className="font-semibold">{todayCount}/{s.dailyAyahGoal} {t('ayahs')}</p>
+              <p className="text-xs text-muted">🔥 {streak} {t('dayStreak')}</p>
             </div>
           </Link>
           {/* Azkar */}
           <Link to="/azkar" className="card p-4 transition hover:border-brand lg:p-5">
-            <p className="text-xs text-muted">Today’s Azkar</p>
+            <p className="text-xs text-muted">{t('todaysAzkar')}</p>
             <div className="mt-2 space-y-1.5 text-sm">
-              <p className="flex items-center gap-2"><Sunrise size={16} className="text-gold" />Morning <span className="ms-auto">{done('morning') ? <Check size={16} className="text-brand" /> : <Circle size={14} className="text-muted" />}</span></p>
-              <p className="flex items-center gap-2"><Sunset size={16} className="text-gold" />Evening <span className="ms-auto">{done('evening') ? <Check size={16} className="text-brand" /> : <Circle size={14} className="text-muted" />}</span></p>
+              <p className="flex items-center gap-2"><Sunrise size={16} className="text-gold" />{t('morning')} <span className="ms-auto">{done('morning') ? <Check size={16} className="text-brand" /> : <Circle size={14} className="text-muted" />}</span></p>
+              <p className="flex items-center gap-2"><Sunset size={16} className="text-gold" />{t('evening')} <span className="ms-auto">{done('evening') ? <Check size={16} className="text-brand" /> : <Circle size={14} className="text-muted" />}</span></p>
             </div>
           </Link>
           {/* Event / Ramadan */}
@@ -131,7 +134,7 @@ export default function Home() {
           ) : event && (
             <Link to="/calendar" className="card col-span-2 flex items-center gap-3 p-4 transition hover:border-brand lg:col-span-1">
               <span className="grid size-11 place-items-center rounded-xl bg-gold/15 text-xl">🌙</span>
-              <div className="min-w-0 flex-1"><p className="text-xs text-muted">Upcoming</p><p className="truncate font-semibold">{event.name}</p></div>
+              <div className="min-w-0 flex-1"><p className="text-xs text-muted">{t('upcoming')}</p><p className="truncate font-semibold">{event.name}</p></div>
               <span className="chip">{Math.max(0, Math.round((event.date.getTime() - now.getTime()) / 86_400_000))}d</span>
             </Link>
           )}
@@ -143,8 +146,8 @@ export default function Home() {
         <Link to={s.lastRead ? `/quran/${s.lastRead.s}#${s.lastRead.a}` : '/quran/1'} className="card group relative flex items-center gap-4 overflow-hidden p-5 transition hover:border-brand">
           <div className="grid size-14 shrink-0 place-items-center rounded-2xl bg-brand text-brand-ink shadow-md"><BookOpen /></div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-muted">{s.lastRead ? 'Continue Quran' : 'Start reading'}</p>
-            <p className="truncate text-lg font-semibold">{data.surahs[(s.lastRead?.s ?? 1) - 1].tname}{s.lastRead && <span className="text-muted"> · Ayah {s.lastRead.a}</span>}</p>
+            <p className="text-xs text-muted">{s.lastRead ? t('continueQuran') : t('startReading')}</p>
+            <p className="truncate text-lg font-semibold">{data.surahs[(s.lastRead?.s ?? 1) - 1].tname}{s.lastRead && <span className="text-muted"> · {t('ayah')} {s.lastRead.a}</span>}</p>
             {plan && <div className="mt-2 h-1.5 max-w-xs overflow-hidden rounded-full bg-surface-2"><div className="h-full rounded-full bg-gold" style={{ width: `${(plan.doneIdx / TOTAL_AYAHS) * 100}%` }} /></div>}
           </div>
           <span className="quran hidden text-3xl text-gold sm:block">{data.surahs[(s.lastRead?.s ?? 1) - 1].name}</span>
@@ -154,7 +157,7 @@ export default function Home() {
 
       {/* All features */}
       <section>
-        <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">All features</h2><Link to="/more" className="text-sm text-brand">See all</Link></div>
+        <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">{t('allFeatures')}</h2><Link to="/more" className="text-sm text-brand">{t('seeAll')}</Link></div>
         <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-7">
           {FEATURES.map(({ to, icon: Icon, label, tint }) => (
             <Link key={to} to={to} className="group flex flex-col items-center gap-1.5 rounded-2xl py-2 text-center text-[11px] font-medium transition active:scale-95 md:text-xs">
@@ -169,19 +172,19 @@ export default function Home() {
         {vod && vodAyah && data && (
           <section className="card p-6 md:p-8">
             <div className="flex items-center">
-              <p className="flex flex-1 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold"><Sparkles size={14} />Daily reflection</p>
+              <p className="flex flex-1 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold"><Sparkles size={14} />{t('dailyReflection')}</p>
               <button className="icon-btn" title="Share as image" onClick={() => shareAyahImage(vodAyah[0], vodAyah[1], `${data.surahs[vod.s - 1].tname} ${vod.s}:${vod.a}`)}><Share2 size={17} /></button>
             </div>
             <p className="quran mt-4 text-3xl leading-[2.2] md:text-[34px]">{vodAyah[0]}</p>
             <p className="mt-3 text-[15px] leading-relaxed text-muted">{vodAyah[1]}</p>
             <div className="mt-4 flex flex-wrap gap-2">
               <Link to={`/quran/${vod.s}#${vod.a}`} className="chip text-brand">{data.surahs[vod.s - 1].tname} {vod.s}:{vod.a}</Link>
-              <Link to="/journal" className="chip hover:text-ink">✍️ Reflect in journal</Link>
+              <Link to="/journal" className="chip hover:text-ink">✍️ {t('reflectJournal')}</Link>
             </div>
           </section>
         )}
         <Link to="/names" className="card pattern flex flex-col items-center justify-center p-6 text-center transition hover:border-brand">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gold">Name of the day</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-gold">{t('nameOfDay')}</p>
           <p className="quran mt-3 text-5xl text-brand">{name[0]}</p>
           <p className="mt-3 font-semibold">{name[1]}</p>
           <p className="text-sm text-muted">{name[2]}</p>

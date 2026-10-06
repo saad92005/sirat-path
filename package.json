@@ -8,11 +8,16 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "data": "node scripts/build-data.mjs"
+    "data": "node scripts/build-data.mjs",
+    "test": "tsx tests/citations.test.ts",
+    "test:e2e": "node tests/e2e.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
     "@fontsource/amiri-quran": "^5.3.0",
+    "@fontsource/noto-nastaliq-urdu": "^5.3.0",
+    "@mlc-ai/web-llm": "^0.2.85",
+    "@supabase/supabase-js": "^2.117.2",
     "adhan": "^4.4.6",
     "dexie": "^4.4.6",
     "dexie-react-hooks": "^4.4.0",
@@ -29,7 +34,9 @@
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
+    "playwright": "^1.63.0",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.2",
     "vite": "^8.3.0",
     "vite-plugin-pwa": "^2.0.0"

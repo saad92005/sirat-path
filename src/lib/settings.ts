@@ -22,6 +22,9 @@ export type Settings = {
   dailyAyahGoal: number
   sound: boolean
   onboarded: boolean
+  secondTranslation: number
+  tajweed: boolean
+  adhan: boolean
 }
 
 const DEFAULTS: Settings = {
@@ -29,7 +32,7 @@ const DEFAULTS: Settings = {
   method: 'MuslimWorldLeague', madhab: 'Shafi', location: null, hijriOffset: 0,
   adjustments: {}, lastRead: null, notify: false,
   readMode: 'verse', playbackRate: 1, repeat: 1, sidebarSurahs: true,
-  accent: 'emerald', lang: 'en', name: '', dailyAyahGoal: 20, sound: false, onboarded: false,
+  accent: 'emerald', lang: 'en', name: '', dailyAyahGoal: 20, sound: false, onboarded: false, secondTranslation: 0, tajweed: false, adhan: false,
 }
 
 const KEY = 'sirat-settings'

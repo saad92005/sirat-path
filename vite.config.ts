@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
+  build: { chunkSizeWarningLimit: 7000 },
+  worker: { format: 'es' },
   plugins: [
     react(),
     tailwindcss(),
@@ -27,8 +29,21 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // The optional on-device AI runtime (~6 MB) is cached on first use instead of precached.
+        globIgnores: ['**/ai-worker-*.js', '**/lib-*.js'],
         navigateFallback: '/index.html',
         runtimeCaching: [
+          {
+            urlPattern: ({ url }) => /\/assets\/(ai-worker|lib)-.*\.js$/.test(url.pathname),
+            handler: 'CacheFirst',
+            options: { cacheName: 'ai-runtime', expiration: { maxEntries: 6 } },
+          },
+          {
+            // Optional study layer (tajweed, word-by-word, tafsir, extra translations).
+            urlPattern: /^https:\/\/api\.quran\.com\/api\/v4\/.*/,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'quran-study', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 1500 } },
+          },
           {
             // Hadith sections — fetched on demand, kept for offline re-reading.
             urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/gh\/fawazahmed0\/hadith-api@1\/.*\.json$/,

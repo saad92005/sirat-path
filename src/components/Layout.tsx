@@ -1,13 +1,13 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
 import { NavLink, Link, useLocation } from 'react-router-dom'
 import {
   BarChart3, BookHeart, BookMarked, BookOpen, CalendarDays, Clock, Compass, Download, GraduationCap, HandCoins, HandHeart,
   Home, Info, LayoutGrid, Library, ListChecks, MessageCircleQuestion, Moon, NotebookPen, Plane, ScrollText, Search,
-  Settings, Smile, Sparkles, Star, Sun, Target, WifiOff,
+  Settings, Smile, Sparkles, Star, Sun, Target, WifiOff, UserRound,
 } from 'lucide-react'
 import AudioBar from './AudioBar'
 import Logo from './Logo'
-import CommandPalette from './CommandPalette'
+const CommandPalette = lazy(() => import('./CommandPalette'))
 import { setSettings, useSettings } from '../lib/settings'
 import { fmtTime, nextPrayer, PRAYER_LABEL } from '../lib/prayer'
 import { useInstall } from '../lib/install'
@@ -55,6 +55,7 @@ export const SIDEBAR: { group: StrKey; items: NavItem[] }[] = [
     { to: '/saved', k: 'saved', icon: BookMarked },
   ] },
   { group: 'app', items: [
+    { to: '/account', k: 'account', icon: UserRound },
     { to: '/settings', k: 'settings', icon: Settings },
     { to: '/about', k: 'sources', icon: Info },
   ] },
@@ -89,7 +90,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh md:ps-64">
       <aside className="fixed inset-y-0 start-0 z-40 hidden w-64 flex-col border-e border-line bg-surface/70 backdrop-blur-xl md:flex">
-        <Link to="/" className="flex h-[72px] items-center gap-2.5 px-5"><Logo size={34} /><span className="leading-tight"><span className="block text-lg font-bold">Sirat Path</span><span className="block text-[11px] text-muted">Walk the straight path, step by step</span></span></Link>
+        <Link to="/" className="flex h-[72px] items-center gap-2.5 px-5"><Logo size={34} /><span className="leading-tight"><span className="block text-lg font-bold">Sirat Path</span><span className="block text-[11px] text-muted">{t('tagline')}</span></span></Link>
         <button onClick={() => setPalette(true)} className="mx-4 mb-2 flex items-center gap-2 rounded-xl border border-line bg-bg px-3 py-2 text-sm text-muted transition hover:border-brand">
           <Search size={15} /> {t('search')}… <kbd className="ms-auto rounded border border-line px-1.5 text-[10px]">Ctrl K</kbd>
         </button>
@@ -142,7 +143,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       <main key={pathname} className="page-in mx-auto max-w-6xl px-4 pb-40 pt-5 md:px-8 md:pb-28 md:pt-8">{children}</main>
 
       <AudioBar />
-      {palette && <CommandPalette onClose={() => setPalette(false)} />}
+      {palette && <Suspense fallback={null}><CommandPalette onClose={() => setPalette(false)} /></Suspense>}
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-surface/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden" aria-label="Primary">
         <div className="grid grid-cols-5">

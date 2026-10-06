@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
-import { Bell, BellOff, ChevronLeft, ChevronRight, MapPin, Printer } from 'lucide-react'
+import { CalendarPlus, Square, Volume2, Bell, BellOff, ChevronLeft, ChevronRight, MapPin, Printer } from 'lucide-react'
 import { computeTimes, fmtTime, hijri, METHODS, nextPrayer, PRAYERS, PRAYER_LABEL } from '../lib/prayer'
 import { setSettings, useSettings } from '../lib/settings'
-import { notificationSupport } from '../lib/notify'
+import { ADHAN_CREDIT, notificationSupport, playAdhan, stopAdhan } from '../lib/notify'
+import { downloadIcs } from '../lib/ics'
 import LocationPicker from '../components/LocationPicker'
+import { useT, type StrKey } from '../lib/i18n'
 import SalahTracker from '../components/SalahTracker'
 
 export default function Prayer() {
   const s = useSettings()
+  const t = useT()
   const [offset, setOffset] = useState(0)
   const [now, setNow] = useState(() => new Date())
   const [editLoc, setEditLoc] = useState(false)
@@ -28,7 +31,7 @@ export default function Prayer() {
 
   return (
     <div className="fade-in space-y-5">
-      <h1 className="h-page">Salah</h1>
+      <h1 className="h-page">{t('salah')}</h1>
       <SalahTracker />
 
       {!s.location || editLoc ? (
@@ -57,7 +60,7 @@ export default function Prayer() {
                 const past = offset === 0 && r.times[p] < now
                 return (
                   <li key={p} className={`flex items-center justify-between px-5 py-4 transition ${isNext ? 'bg-brand text-brand-ink' : ''} ${past && !isNext ? 'opacity-50' : ''}`}>
-                    <span className={`font-medium ${p === 'sunrise' && !isNext ? 'text-muted' : ''}`}>{p === 'dhuhr' && date.getDay() === 5 ? 'Jumuʿah' : PRAYER_LABEL[p]}</span>
+                    <span className={`font-medium ${p === 'sunrise' && !isNext ? 'text-muted' : ''}`}>{p === 'dhuhr' && date.getDay() === 5 ? t('jumuah') : t(p as StrKey)}</span>
                     <span className="text-lg font-semibold tabular-nums">{fmtTime(r.times[p])}</span>
                   </li>
                 )
@@ -119,6 +122,24 @@ export default function Prayer() {
           {s.notify ? <Bell size={16} /> : <BellOff size={16} />}{s.notify ? 'On' : 'Off'}
         </button>
       </section>
+        <section className="card space-y-3 p-5 lg:col-span-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">Adhan sound</p>
+              <p className="text-sm text-muted">Play the adhan when a reminder fires (while the app is open). <span className="text-xs">{ADHAN_CREDIT}.</span></p>
+            </div>
+            <button className="btn-ghost" onClick={() => playAdhan().catch(() => alert('Could not play — check your connection.'))}><Volume2 size={16} />Preview</button>
+            <button className="btn-ghost" onClick={stopAdhan}><Square size={14} />Stop</button>
+            <button className={s.adhan ? 'btn' : 'btn-ghost'} onClick={() => setSettings({ adhan: !s.adhan })}>{s.adhan ? 'On' : 'Off'}</button>
+          </div>
+          <div className="flex flex-wrap items-center gap-3 border-t border-line pt-3">
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold">Reminders even when the app is closed</p>
+              <p className="text-sm text-muted">Add the next 30 days of prayer times to your phone’s calendar. Your calendar app raises the alarm — no internet or server needed. Re-export monthly or after changing location.</p>
+            </div>
+            <button className="btn" disabled={!s.location} onClick={() => downloadIcs(s, 30, 0)}><CalendarPlus size={16} />Add to calendar</button>
+          </div>
+        </section>
       </div>
     </div>
   )

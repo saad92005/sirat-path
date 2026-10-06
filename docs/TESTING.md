@@ -1,10 +1,11 @@
 # Testing
 
 ```bash
+npm test                      # unit: AI citation validation (tsx)
 npm run build                 # type-check (tsc -b) + production build
 npm run preview               # in one terminal
-npm i -D playwright && npx playwright install chromium
-node tests/e2e.mjs            # in another terminal
+npx playwright install chromium
+npm run test:e2e              # in another terminal
 ```
 
 `tests/e2e.mjs`:
@@ -15,3 +16,14 @@ node tests/e2e.mjs            # in another terminal
 - saves screenshots to `tests/screens/`
 
 Last run: all routes passed with no errors.
+
+Additional e2e checks:
+
+- **Regression guards** for previously fixed bugs: Zakat inputs keep focus while typing, no duplicated "Quran · Quran" label, hero gradients visible under the pattern, no horizontal overflow on phones
+- **Study tools** with live data: tajweed colouring, Urdu translation, word-by-word and tafsir
+- **Ask** shows verified sources, and **Account** shows guest mode when Supabase isn't configured
+
+## Not covered automatically
+
+- **On-device AI generation:** needs WebGPU plus a 300 MB+ model download. The retrieval, citation-validation (unit-tested) and "unavailable on this device" paths are tested. Model loading was verified up to the parameter download, but the test machine's bandwidth was too low to finish it.
+- **Supabase sync and auth:** needs a real project. Guest mode is tested. See SETUP.md for the five-minute manual check after creating a free project.

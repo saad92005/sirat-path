@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
-  AlignJustify, Bookmark, BookmarkCheck, Brain, Check, ChevronLeft, ChevronRight, Copy, Download, Image, Languages,
+  AlignJustify, BookOpenText, Palette, Bookmark, BookmarkCheck, Brain, Check, ChevronLeft, ChevronRight, Copy, Download, Image, Languages,
   List, Loader2, Minus, NotebookPen, Pause, Play, Plus, Target,
 } from 'lucide-react'
 import { absIndex, juzOf, useQuran } from '../lib/quran'
@@ -11,6 +11,8 @@ import { db, logRead, saveNote, toggleBookmark, today } from '../lib/db'
 import { downloadSurah, isSurahDownloaded, play, skip, toggle, useAudio } from '../lib/audio'
 import { shareAyahImage } from '../lib/shareImage'
 import Loading from '../components/Loading'
+import { Sheet } from '../components/ui'
+import { chapterTajweed, chapterTranslation, STUDY_TRANSLATIONS, TAFSIRS, TAJWEED_RULES, tafsir as fetchTafsir, wordByWord, type TajSeg, type Word } from '../lib/qurancom'
 
 // Ayahs counted toward today's reading stats (once per ayah per day, per session).
 const seenToday = new Set<string>()
@@ -31,6 +33,20 @@ export default function Reader() {
   const [hifz, setHifz] = useState(false)
   const [revealed, setRevealed] = useState<Set<number>>(new Set())
   const [filter, setFilter] = useState('')
+  const [study, setStudy] = useState<number | null>(null)
+  const [taj, setTaj] = useState<Map<number, TajSeg[]> | null>(null)
+  const [second, setSecond] = useState<Map<number, string> | null>(null)
+  const [extraErr, setExtraErr] = useState<string | null>(null)
+
+  // Optional online layers (tajweed colouring, second translation). Fall back to the local text if unavailable.
+  useEffect(() => {
+    setTaj(null); setExtraErr(null)
+    if (settings.tajweed) chapterTajweed(n).then(setTaj).catch(() => setExtraErr('Tajweed colours need an internet connection the first time — showing the standard text.'))
+  }, [n, settings.tajweed])
+  useEffect(() => {
+    setSecond(null)
+    if (settings.secondTranslation) chapterTranslation(n, settings.secondTranslation).then(setSecond).catch(() => setExtraErr('The second translation needs an internet connection the first time.'))
+  }, [n, settings.secondTranslation])
   const listRef = useRef<HTMLDivElement>(null)
   const sideRef = useRef<HTMLDivElement>(null)
 
@@ -153,12 +169,17 @@ export default function Reader() {
           </div>
         </section>
 
-        <div className="sticky top-14 z-20 -mx-4 mt-3 flex items-center gap-1 bg-bg/85 px-4 py-2 backdrop-blur-xl md:top-0 md:-mx-8 md:px-8">
+        <div className="sticky top-14 z-20 -mx-4 mt-3 flex flex-wrap items-center gap-x-0.5 gap-y-1 bg-bg/85 px-4 py-2 backdrop-blur-xl md:top-0 md:-mx-8 md:px-8">
           <div className="flex rounded-xl bg-surface-2 p-1">
             <button title="Verse by verse (M)" onClick={() => setSettings({ readMode: 'verse' })} className={`rounded-lg px-2.5 py-1.5 transition ${!mushaf ? 'bg-surface shadow-sm text-brand' : 'text-muted'}`}><List size={16} /></button>
             <button title="Mushaf flow (M)" onClick={() => setSettings({ readMode: 'mushaf' })} className={`rounded-lg px-2.5 py-1.5 transition ${mushaf ? 'bg-surface shadow-sm text-brand' : 'text-muted'}`}><AlignJustify size={16} /></button>
           </div>
           <button title="Memorisation mode — hide text, tap to reveal" className={`icon-btn ml-1 ${hifz ? 'bg-brand/10 text-brand' : ''}`} onClick={() => setHifz(!hifz)}><Brain size={18} /></button>
+          <button title="Tajweed colours" className={`icon-btn ${settings.tajweed ? 'bg-brand/10 text-brand' : ''}`} onClick={() => setSettings({ tajweed: !settings.tajweed })}><Palette size={18} /></button>
+          <select aria-label="Second translation" className="ms-1 max-w-24 rounded-lg border border-line bg-surface px-2 py-1.5 text-xs sm:max-w-none" value={settings.secondTranslation} onChange={(e) => setSettings({ secondTranslation: +e.target.value })}>
+            <option value={0}>+ Urdu</option>
+            {STUDY_TRANSLATIONS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+          </select>
           <button title="Translation (T)" className={`icon-btn ${settings.showTranslation ? 'text-brand' : ''}`} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}><Languages size={18} /></button>
           <div className="ml-auto flex items-center">
             <button className="icon-btn" onClick={() => setSettings({ arabicSize: Math.max(20, fontPx - 2) })} aria-label="Smaller text"><Minus size={17} /></button>
@@ -167,6 +188,12 @@ export default function Reader() {
           </div>
         </div>
 
+        {extraErr && <p className="mt-2 rounded-xl bg-gold/10 px-4 py-2 text-sm text-gold">{extraErr}</p>}
+        {settings.tajweed && taj && !mushaf && (
+          <details className="mt-2 rounded-xl bg-surface-2 px-4 py-2 text-xs"><summary className="cursor-pointer font-medium">Tajweed colour key · text: Quran.com</summary>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1">{Object.entries(TAJWEED_RULES).filter(([k]) => !k.startsWith('idgham_mut')).map(([k, r]) => <span key={k} className="flex items-center gap-1.5"><span className="size-2.5 rounded-full" style={{ background: r.color }} />{r.label}</span>)}</div>
+          </details>
+        )}
         {hifz && <p className="mt-2 rounded-xl bg-brand/10 px-4 py-2 text-sm text-brand">Memorisation mode: recite from memory, then tap an ayah to check it. Use repeat in the player to loop each ayah.</p>}
 
         {mushaf ? (
@@ -210,12 +237,14 @@ export default function Reader() {
                     <button className="icon-btn size-9" aria-label="Share as image" title="Share as image" onClick={async () => {
                       toast('Creating image…'); toast((await shareAyahImage(ar, en, ref)) === 'shared' ? 'Shared' : 'Image saved')
                     }}><Image size={17} /></button>
+                    <button className="icon-btn size-9" aria-label="Study: word by word and tafsir" title="Word by word & tafsir" onClick={() => setStudy(a)}><BookOpenText size={17} /></button>
                     {plan && <button className="icon-btn size-9" title="Mark Khatm progress up to here" aria-label="Mark read up to here" onClick={() => markRead(a)}><Target size={17} /></button>}
                   </div>
                   <p onClick={() => hidden(a) && reveal(a)} className={`quran text-right transition ${hidden(a) ? 'cursor-pointer select-none blur-md' : ''}`} style={{ fontSize: fontPx }}>
-                    {ar} <span className="ayah-num">{a}</span>
+                    {taj?.get(a) ? taj.get(a)!.map((g, k) => <span key={k} style={g.rule ? { color: TAJWEED_RULES[g.rule]?.color } : undefined}>{g.t}</span>) : ar} <span className="ayah-num">{a}</span>
                   </p>
                   {settings.showTranslation && <p className="mt-3 max-w-3xl text-[15px] leading-relaxed text-muted md:text-base">{en}</p>}
+                  {second?.get(a) && <p className="urdu mt-3 text-right text-lg text-muted">{second.get(a)}</p>}
                   {noteFor === a && <NoteEditor s={n} a={a} initial={note?.text ?? ''} onDone={() => setNoteFor(null)} />}
                   {note && noteFor !== a && (
                     <p onClick={() => setNoteFor(a)} className="mt-3 cursor-pointer rounded-xl border-l-4 border-brand bg-surface-2 px-4 py-2 text-sm">{note.text}</p>
@@ -236,6 +265,10 @@ export default function Reader() {
         </p>
       </div>
 
+      <Sheet open={study !== null} onClose={() => setStudy(null)} title={study ? `Study ${surah.tname} ${n}:${study}` : ''}>
+        {study !== null && <StudyPanel s={n} a={study} ar={surah.ayahs[study - 1][0]} />}
+      </Sheet>
+
       {flash && <div className="fade-in fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-sm text-bg shadow-lg md:ml-32">{flash}</div>}
     </div>
   )
@@ -250,6 +283,56 @@ function NoteEditor({ s, a, initial, onDone }: { s: number; a: number; initial: 
         <button className="btn-ghost" onClick={onDone}>Cancel</button>
         <button className="btn" onClick={async () => { await saveNote(s, a, text); onDone() }}>Save note</button>
       </div>
+    </div>
+  )
+}
+
+function StudyPanel({ s, a, ar }: { s: number; a: number; ar: string }) {
+  const [tab, setTab] = useState<'words' | 'tafsir'>('words')
+  const [words, setWords] = useState<Word[] | null>(null)
+  const [tid, setTid] = useState<number>(() => Number(localStorage.getItem('sirat-tafsir') ?? 169))
+  const [text, setText] = useState<string[] | null>(null)
+  const [err, setErr] = useState(false)
+  useEffect(() => { setErr(false); setWords(null); wordByWord(s, a).then(setWords).catch(() => setErr(true)) }, [s, a])
+  useEffect(() => {
+    if (tab !== 'tafsir') return
+    setErr(false); setText(null)
+    try { localStorage.setItem('sirat-tafsir', String(tid)) } catch { /* ignore */ }
+    fetchTafsir(tid, s, a).then(setText).catch(() => setErr(true))
+  }, [tab, tid, s, a])
+  const t = TAFSIRS.find((x) => x.id === tid) ?? TAFSIRS[0]
+  return (
+    <div>
+      <p className="quran mb-4 text-right text-2xl">{ar}</p>
+      <div className="mb-4 flex rounded-xl bg-surface-2 p-1 text-sm">
+        {(['words', 'tafsir'] as const).map((k) => <button key={k} onClick={() => setTab(k)} className={`flex-1 rounded-lg py-1.5 transition ${tab === k ? 'bg-surface font-semibold shadow-sm' : 'text-muted'}`}>{k === 'words' ? 'Word by word' : 'Tafsir'}</button>)}
+      </div>
+      {err ? <p className="rounded-xl bg-gold/10 p-4 text-sm text-gold">This needs an internet connection the first time. Once loaded, it is saved for offline use.</p> : tab === 'words' ? (
+        !words ? <div className="h-32 animate-pulse rounded-2xl bg-surface-2" /> : (
+          <div className="flex flex-wrap justify-start gap-2" dir="rtl">
+            {words.filter((w) => !w.isEnd).map((w) => (
+              <div key={w.position} className="rounded-xl border border-line bg-bg px-3 py-2 text-center">
+                <p className="quran text-2xl" style={{ lineHeight: 1.6 }}>{w.text}</p>
+                <p className="text-[11px] italic text-gold" dir="ltr">{w.translit}</p>
+                <p className="text-xs text-muted" dir="ltr">{w.tr}</p>
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        <div>
+          <select className="input mb-3 py-2" value={tid} onChange={(e) => setTid(+e.target.value)}>
+            {TAFSIRS.map((x) => <option key={x.id} value={x.id}>{x.name} ({x.lang.toUpperCase()})</option>)}
+          </select>
+          {!text ? <div className="h-40 animate-pulse rounded-2xl bg-surface-2" /> : (
+            <div className={`space-y-3 text-[15px] leading-relaxed ${t.lang === 'ur' ? 'urdu text-right text-lg' : t.lang === 'ar' ? 'quran text-right text-xl' : ''}`}>
+              {text.map((p, i) => <p key={i}>{p}</p>)}
+              {text.length === 0 && <p className="text-muted">No tafsir text for this ayah in this edition (it may be covered with a neighbouring ayah).</p>}
+            </div>
+          )}
+        </div>
+      )}
+      <p className="mt-4 text-xs text-muted">Word-by-word and tafsir: Quran.com API, loaded on demand. Tafsir reflects its author’s scholarship.</p>
     </div>
   )
 }

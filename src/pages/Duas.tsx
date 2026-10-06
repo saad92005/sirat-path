@@ -6,6 +6,7 @@ import { useQuran } from '../lib/quran'
 import DuaCard from '../components/DuaCard'
 import Loading from '../components/Loading'
 import { PageHeader } from '../components/ui'
+import { useT } from '../lib/i18n'
 
 export default function Duas() {
   const { data, error } = useQuran()
@@ -13,6 +14,7 @@ export default function Duas() {
   const { hash } = useLocation()
   const cat = params.get('c')
   const [q, setQ] = useState('')
+  const t = useT()
 
   const list = useMemo(() => {
     const t = q.trim().toLowerCase()
@@ -27,11 +29,11 @@ export default function Duas() {
 
   return (
     <div>
-      <PageHeader title={current ? current.label : 'Duas & Supplications'} subtitle={current ? `${list.length} duas` : 'From the Quran and authentic Sunnah, each with its reference'}
-        action={cat && <button className="btn-ghost" onClick={() => setParams({})}>All categories</button>} />
+      <PageHeader title={current ? current.label : t('duas')} subtitle={current ? `${list.length} duas` : t('duasSubtitle')}
+        action={cat && <button className="btn-ghost" onClick={() => setParams({})}>{t('allCategories')}</button>} />
       <div className="relative mb-5">
         <Search className="absolute start-3.5 top-1/2 -translate-y-1/2 text-muted" size={18} />
-        <input className="input ps-10" placeholder="Search duas — e.g. travel, anxiety, parents" value={q} onChange={(e) => setQ(e.target.value)} />
+        <input className="input ps-10" placeholder={t('searchDuas')} value={q} onChange={(e) => setQ(e.target.value)} />
       </div>
 
       {!cat && !q ? (

@@ -2,6 +2,17 @@ import { useEffect } from 'react'
 import { computeTimes, PRAYERS, PRAYER_LABEL } from './prayer'
 import { getSettings, useSettings } from './settings'
 
+// Adhan recording by Andrewler, CC BY-SA 4.0, via Wikimedia Commons (streamed, not bundled).
+export const ADHAN_URL = 'https://upload.wikimedia.org/wikipedia/commons/transcoded/8/86/Azan.ogg/Azan.ogg.mp3'
+export const ADHAN_CREDIT = 'Adhan recording: Andrewler, CC BY-SA 4.0, via Wikimedia Commons'
+let adhanEl: HTMLAudioElement | null = null
+export function playAdhan() {
+  adhanEl?.pause()
+  adhanEl = new Audio(ADHAN_URL)
+  return adhanEl.play()
+}
+export function stopAdhan() { adhanEl?.pause(); adhanEl = null }
+
 export const notificationSupport = () => {
   if (!('Notification' in window)) return 'unsupported' as const
   return Notification.permission
@@ -31,6 +42,7 @@ export function usePrayerNotifications() {
           const reg = await navigator.serviceWorker?.getRegistration()
           if (reg) reg.showNotification('Sirat Path — Prayer time', { body, icon: '/icon-192.png', tag: key })
           else new Notification('Sirat Path — Prayer time', { body, icon: '/icon-192.png' })
+          if (getSettings().adhan) playAdhan().catch(() => { /* browser blocked autoplay */ })
         }
       }
     }

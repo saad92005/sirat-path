@@ -1,12 +1,14 @@
 @import 'tailwindcss';
 @import '@fontsource/amiri-quran/400.css';
 @import '@fontsource-variable/inter';
+@import '@fontsource/noto-nastaliq-urdu/400.css';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 @theme {
   --font-sans: 'Inter Variable', system-ui, sans-serif;
   --font-quran: 'Amiri Quran', 'Amiri', serif;
+  --font-urdu: 'Noto Nastaliq Urdu', serif;
   --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
@@ -103,3 +105,6 @@ body { font-family: var(--font-sans); -webkit-tap-highlight-color: transparent; 
 :focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 8px; }
 .sheet-in { animation: sheet .3s cubic-bezier(.2,.8,.2,1) both; }
 @keyframes sheet { from { transform: translateY(100%) } to { transform: none } }
+
+.urdu { font-family: var(--font-urdu); direction: rtl; line-height: 2.4; }
+[lang='ur'] body { font-family: var(--font-sans), var(--font-urdu); }

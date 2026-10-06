@@ -30,6 +30,8 @@ const Journal = lazy(() => import('./pages/Journal'))
 const Habits = lazy(() => import('./pages/Habits'))
 const Kids = lazy(() => import('./pages/Kids'))
 const Library = lazy(() => import('./pages/Library'))
+const Account = lazy(() => import('./pages/Account'))
+const Admin = lazy(() => import('./pages/Admin'))
 import { useSettings } from './lib/settings'
 import { isRtl } from './lib/i18n'
 import { usePrayerNotifications } from './lib/notify'
@@ -94,6 +96,8 @@ export default function App() {
           <Route path="/habits" element={<Habits />} />
           <Route path="/kids" element={<Kids />} />
           <Route path="/library" element={<Library />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/more" element={<More />} />
           <Route path="/about" element={<About />} />

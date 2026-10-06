@@ -1,66 +1,137 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Info, Search } from 'lucide-react'
+import { AlertTriangle, Bot, Cpu, Download, Info, Loader2, Search, ShieldCheck } from 'lucide-react'
 import { useQuran } from '../lib/quran'
 import { search } from '../lib/search'
-import { hasWebGPU } from '../lib/ai'
+import { hasWebGPU, isModelCached, isModelLoaded, loadLocalModel, LOCAL_MODELS, LocalAIProvider, validateCitations, type Source } from '../lib/ai'
 import Loading from '../components/Loading'
+import { PageHeader } from '../components/ui'
 
-const STOP = new Set('what does the quran say about is are a an of to in on for and or how why who when do does i me my you we our it be with from by as at this that'.split(' '))
+const STOP = new Set('what does the quran say about is are a an of to in on for and or how why who when do does i me my you we our it be with from by as at this that tell explain allah islam'.split(' '))
+const MODEL_KEY = 'sirat-ai-model'
 
 export default function Ask() {
   const { data, error } = useQuran()
   const [q, setQ] = useState('')
   const [submitted, setSubmitted] = useState('')
   const [gpu, setGpu] = useState<boolean | null>(null)
-  useEffect(() => { hasWebGPU().then(setGpu) }, [])
+  const [model, setModel] = useState<string>(() => localStorage.getItem(MODEL_KEY) ?? LOCAL_MODELS[0].id)
+  const [cached, setCached] = useState(false)
+  const [loading, setLoading] = useState<{ text: string; p: number } | null>(null)
+  const [ready, setReady] = useState(() => isModelLoaded() === model)
+  const [answer, setAnswer] = useState<{ text: string; done: boolean; valid: string[]; invalid: string[]; declined: boolean } | null>(null)
+  const [aiErr, setAiErr] = useState<string | null>(null)
 
-  // Keyword retrieval with OR semantics over the question's meaningful words.
+  useEffect(() => { hasWebGPU().then(setGpu) }, [])
+  useEffect(() => { isModelCached(model).then(setCached); setReady(isModelLoaded() === model) }, [model])
+
+  // Step 1 — retrieval: verified ayahs only, ranked on-device.
   const hits = useMemo(() => {
     if (!data || !submitted) return []
     const words = submitted.toLowerCase().replace(/[^a-z؀-ۿ\s]/g, ' ').split(/\s+/).filter((w) => w.length > 2 && !STOP.has(w))
     const scores = new Map<string, { s: number; a: number; score: number }>()
     for (const w of words) for (const h of search(data, w, 40)) {
       const k = `${h.s}:${h.a}`
-      const cur = scores.get(k)
-      scores.set(k, { ...h, score: (cur?.score ?? 0) + h.score })
+      scores.set(k, { ...h, score: (scores.get(k)?.score ?? 0) + h.score })
     }
-    return [...scores.values()].sort((a, b) => b.score - a.score).slice(0, 12)
+    return [...scores.values()].sort((a, b) => b.score - a.score).slice(0, 8)
   }, [data, submitted])
 
+  async function enable() {
+    setAiErr(null)
+    try {
+      localStorage.setItem(MODEL_KEY, model)
+      setLoading({ text: 'Starting…', p: 0 })
+      await loadLocalModel(model, (r) => setLoading({ text: r.text, p: r.progress }))
+      setReady(true); setCached(true)
+    } catch (e) {
+      console.error("[sirat-path] AI init failed", e); setAiErr(`Could not start the on-device model: ${e instanceof Error ? e.message : typeof e === "object" ? JSON.stringify(e) : String(e)}`)
+    } finally { setLoading(null) }
+  }
+
+  // Step 2 — generation grounded in the retrieved sources, Step 3 — citation validation.
+  useEffect(() => {
+    if (!ready || !data || !submitted || hits.length === 0) { setAnswer(null); return }
+    let live = true
+    const sources: Source[] = hits.slice(0, 6).map(({ s, a }) => ({ ref: `${s}:${a}`, text: data.surahs[s - 1].ayahs[a - 1][1] }))
+    setAnswer({ text: '', done: false, valid: [], invalid: [], declined: false }); setAiErr(null)
+    LocalAIProvider.explain(submitted, sources, (t) => live && setAnswer({ text: t, done: false, valid: [], invalid: [], declined: false }))
+      .then((full) => { if (!live) return; const v = validateCitations(full, sources); setAnswer({ text: v.cleaned, done: true, valid: v.valid, invalid: v.invalid, declined: v.declined }) })
+      .catch((e) => live && setAiErr((e as Error).message))
+    return () => { live = false }
+  }, [ready, submitted, hits, data])
+
   if (!data) return <Loading error={error} />
+  const rejected = answer?.done && !answer.declined && answer.valid.length === 0
 
   return (
-    <div className="fade-in space-y-4">
-      <h1 className="h-page">Ask</h1>
-      <form onSubmit={(e) => { e.preventDefault(); setSubmitted(q) }} className="flex gap-2">
+    <div className="mx-auto max-w-3xl">
+      <PageHeader title="Ask Islam" subtitle="Answers grounded in verified Quranic sources — never invented" />
+      <form onSubmit={(e) => { e.preventDefault(); setSubmitted(q.trim()) }} className="flex gap-2">
         <input className="input" placeholder="e.g. What does the Quran say about patience?" value={q} onChange={(e) => setQ(e.target.value)} />
         <button className="btn shrink-0"><Search size={16} />Ask</button>
       </form>
 
-      <div className="card flex gap-3 p-4 text-sm">
-        <Info size={18} className="mt-0.5 shrink-0 text-gold" />
-        <p className="text-muted">
-          {gpu === false
-            ? 'Local AI is unavailable on this device. '
-            : 'On-device AI explanations are not enabled yet. '}
-          Sirat Path never sends your questions to a server. Below are the most relevant verified Quranic sources, found on your device.
-        </p>
-      </div>
+      {/* AI status */}
+      <section className="card mt-4 p-4 text-sm">
+        {gpu === null ? <p className="text-muted">Checking device…</p> : !gpu ? (
+          <p className="flex gap-2 text-muted"><Info size={18} className="shrink-0 text-gold" />Local AI is unavailable on this device (no WebGPU). You still get the most relevant verified Quranic sources below. Questions never leave your device.</p>
+        ) : ready ? (
+          <p className="flex items-center gap-2 text-brand"><Cpu size={18} />On-device AI is ready · {LOCAL_MODELS.find((m) => m.id === model)?.label}. Runs privately on your device.</p>
+        ) : (
+          <div className="space-y-3">
+            <p className="flex gap-2"><Bot size={18} className="shrink-0 text-brand" /><span>Optional: enable an AI that runs <b>entirely on your device</b> to summarise the verses it finds. No account and no server, and your questions stay private.</span></p>
+            <div className="flex flex-wrap gap-2">
+              <select className="input w-auto py-2" value={model} onChange={(e) => setModel(e.target.value)} disabled={!!loading}>
+                {LOCAL_MODELS.map((m) => <option key={m.id} value={m.id}>{m.label} · {m.size}</option>)}
+              </select>
+              <button className="btn" onClick={enable} disabled={!!loading}>{loading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}{cached ? 'Start AI' : 'Download & enable'}</button>
+            </div>
+            {loading && (
+              <div><div className="h-2 overflow-hidden rounded-full bg-surface-2"><div className="h-full rounded-full bg-brand transition-all" style={{ width: `${Math.round(loading.p * 100)}%` }} /></div><p className="mt-1 truncate text-xs text-muted">{loading.text}</p></div>
+            )}
+            <p className="text-xs text-muted">Downloaded once, then cached for offline use. Licence: {LOCAL_MODELS.find((m) => m.id === model)?.licence}. Works best on Chrome/Edge with a recent GPU.</p>
+          </div>
+        )}
+        {aiErr && <p className="mt-2 text-red-500">{aiErr}</p>}
+      </section>
 
-      {submitted && hits.length === 0 && <p className="py-8 text-center text-sm text-muted">No matching ayahs. Try different words.</p>}
-      <div className="space-y-2.5">
-        {hits.map(({ s, a }) => {
-          const [ar, en] = data.surahs[s - 1].ayahs[a - 1]
-          return (
-            <Link key={`${s}:${a}`} to={`/quran/${s}#${a}`} className="card block p-4 transition hover:border-brand">
-              <p className="chip">{data.surahs[s - 1].tname} {s}:{a}</p>
-              <p className="quran mt-2 text-2xl leading-[2]">{ar}</p>
-              <p className="mt-1 text-sm text-muted">{en}</p>
-            </Link>
-          )
-        })}
-      </div>
+      {/* AI answer — clearly labelled and separated from sources */}
+      {answer && (
+        <section className="mt-4 rounded-2xl border-2 border-dashed border-brand/40 bg-brand/5 p-5">
+          <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-brand"><Bot size={14} />AI reflection — not Quran, hadith or a religious ruling</p>
+          {rejected ? (
+            <p className="flex gap-2 text-sm"><AlertTriangle size={16} className="shrink-0 text-gold" />The AI response did not cite the provided sources, so it was withheld. Please read the verified sources below.</p>
+          ) : (
+            <p className="whitespace-pre-wrap leading-relaxed">{answer.text || '…'}{!answer.done && <span className="ms-1 inline-block h-4 w-1.5 animate-pulse bg-brand align-middle" />}</p>
+          )}
+          {answer.done && !rejected && (
+            <p className="mt-3 flex flex-wrap items-center gap-1.5 text-xs text-muted"><ShieldCheck size={14} className="text-brand" />Citations checked against retrieved sources:
+              {answer.valid.map((r) => <Link key={r} to={`/quran/${r.split(':')[0]}#${r.split(':')[1]}`} className="chip text-brand">{r}</Link>)}
+              {answer.invalid.length > 0 && <span className="text-gold">· removed {answer.invalid.length} unsupported citation(s)</span>}
+            </p>
+          )}
+        </section>
+      )}
+
+      {submitted && (
+        <>
+          <p className="mt-6 mb-2 text-xs font-semibold uppercase tracking-wider text-gold">Verified sources · Quran</p>
+          {hits.length === 0 && <p className="py-6 text-center text-sm text-muted">I don't have enough reliable sources to answer this confidently. Try different words.</p>}
+          <div className="space-y-2.5">
+            {hits.map(({ s, a }) => {
+              const [ar, en] = data.surahs[s - 1].ayahs[a - 1]
+              return (
+                <Link key={`${s}:${a}`} to={`/quran/${s}#${a}`} className="card block p-4 transition hover:border-brand">
+                  <p className="chip text-brand">{data.surahs[s - 1].tname} {s}:{a}</p>
+                  <p className="quran mt-2 text-2xl leading-[2]">{ar}</p>
+                  <p className="mt-1 text-sm text-muted">{en}</p>
+                </Link>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }
