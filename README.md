@@ -2,6 +2,8 @@
 
 *Walk the straight path, step by step.*
 
+**Live:** https://siratpath.vercel.app · install it from your phone's browser (Add to Home Screen)
+
 A complete, offline-first Muslim companion that installs on your phone and costs nothing to run. There's no account, no paid API, no ads and no tracking.
 
 **Pillars:** Quran · Salah · Duas & Azkar · Hadith · Learning, plus Qibla, the Islamic calendar, Ramadan, Zakat, Hajj & Umrah, a reflection journal, habits, a kids mode and more.
