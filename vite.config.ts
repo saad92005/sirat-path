@@ -30,6 +30,12 @@ export default defineConfig({
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
+            // Hadith sections — fetched on demand, kept for offline re-reading.
+            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/gh\/fawazahmed0\/hadith-api@1\/.*\.json$/,
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'hadith', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 400 } },
+          },
+          {
             // Recitation audio streamed from EveryAyah; cached only once the user plays/downloads it.
             urlPattern: /^https:\/\/everyayah\.com\/data\/.*\.mp3$/,
             handler: 'CacheFirst',

@@ -1,25 +1,37 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
+import Loading from './components/Loading'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import Layout from './components/Layout'
 import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
-import SurahList from './pages/SurahList'
-import Reader from './pages/Reader'
-import SearchPage from './pages/Search'
-import Prayer from './pages/Prayer'
-import QiblaPage from './pages/Qibla'
-import Duas from './pages/Duas'
-import DhikrPage from './pages/Dhikr'
-import Khatm from './pages/Khatm'
-import Saved from './pages/Saved'
-import SettingsPage from './pages/Settings'
-import More from './pages/More'
-import About from './pages/About'
-import Ask from './pages/Ask'
-import Names from './pages/Names'
-import CalendarPage from './pages/Calendar'
-import Insights from './pages/Insights'
+const SurahList = lazy(() => import('./pages/SurahList'))
+const Reader = lazy(() => import('./pages/Reader'))
+const SearchPage = lazy(() => import('./pages/Search'))
+const Prayer = lazy(() => import('./pages/Prayer'))
+const QiblaPage = lazy(() => import('./pages/Qibla'))
+const Duas = lazy(() => import('./pages/Duas'))
+const DhikrPage = lazy(() => import('./pages/Dhikr'))
+const Khatm = lazy(() => import('./pages/Khatm'))
+const Saved = lazy(() => import('./pages/Saved'))
+const SettingsPage = lazy(() => import('./pages/Settings'))
+const More = lazy(() => import('./pages/More'))
+const About = lazy(() => import('./pages/About'))
+const Ask = lazy(() => import('./pages/Ask'))
+const Names = lazy(() => import('./pages/Names'))
+const CalendarPage = lazy(() => import('./pages/Calendar'))
+const Insights = lazy(() => import('./pages/Insights'))
+const Azkar = lazy(() => import('./pages/Azkar'))
+const Hadith = lazy(() => import('./pages/Hadith'))
+const Learn = lazy(() => import('./pages/Learn'))
+const Ramadan = lazy(() => import('./pages/Ramadan'))
+const Zakat = lazy(() => import('./pages/Zakat'))
+const Hajj = lazy(() => import('./pages/Hajj'))
+const Journal = lazy(() => import('./pages/Journal'))
+const Habits = lazy(() => import('./pages/Habits'))
+const Kids = lazy(() => import('./pages/Kids'))
+const Library = lazy(() => import('./pages/Library'))
 import { useSettings } from './lib/settings'
+import { isRtl } from './lib/i18n'
 import { usePrayerNotifications } from './lib/notify'
 
 export default function App() {
@@ -38,6 +50,13 @@ export default function App() {
     return () => mq.removeEventListener('change', apply)
   }, [settings.theme])
 
+  useEffect(() => {
+    const el = document.documentElement
+    el.dataset.accent = settings.accent
+    el.lang = settings.lang
+    el.dir = isRtl(settings.lang) ? 'rtl' : 'ltr'
+  }, [settings.accent, settings.lang])
+
   useEffect(() => { if (!pathname.startsWith('/quran/')) window.scrollTo(0, 0) }, [pathname])
 
   usePrayerNotifications()
@@ -45,6 +64,7 @@ export default function App() {
   return (
     <Layout>
       <ErrorBoundary key={pathname}>
+        <Suspense fallback={<Loading />}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/quran" element={<SurahList />} />
@@ -60,11 +80,26 @@ export default function App() {
           <Route path="/names" element={<Names />} />
           <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/insights" element={<Insights />} />
+          <Route path="/azkar" element={<Azkar />} />
+          <Route path="/hadith" element={<Hadith />} />
+          <Route path="/hadith/:collection" element={<Hadith />} />
+          <Route path="/hadith/:collection/:section" element={<Hadith />} />
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/learn/:course" element={<Learn />} />
+          <Route path="/learn/:course/:lesson" element={<Learn />} />
+          <Route path="/ramadan" element={<Ramadan />} />
+          <Route path="/zakat" element={<Zakat />} />
+          <Route path="/hajj" element={<Hajj />} />
+          <Route path="/journal" element={<Journal />} />
+          <Route path="/habits" element={<Habits />} />
+          <Route path="/kids" element={<Kids />} />
+          <Route path="/library" element={<Library />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/more" element={<More />} />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<Home />} />
         </Routes>
+        </Suspense>
       </ErrorBoundary>
     </Layout>
   )

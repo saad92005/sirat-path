@@ -4,29 +4,40 @@ import { BookOpen, CornerDownLeft, FileText, Search } from 'lucide-react'
 import { useQuran } from '../lib/quran'
 import { search, searchSurahs } from '../lib/search'
 import { SIDEBAR } from './Layout'
+import { useT } from '../lib/i18n'
+import { DUAS } from '../content/duas'
+import { COURSES } from '../content/learn'
 
 type Item = { key: string; label: string; hint?: string; to: string; kind: 'page' | 'surah' | 'ayah'; ar?: string }
 
 export default function CommandPalette({ onClose }: { onClose: () => void }) {
   const { data } = useQuran()
   const nav = useNavigate()
+  const t = useT()
   const [q, setQ] = useState('')
   const [sel, setSel] = useState(0)
   const listRef = useRef<HTMLDivElement>(null)
 
+  const tr = t
   const items = useMemo<Item[]>(() => {
     const t = q.trim().toLowerCase()
     const pages: Item[] = SIDEBAR.flatMap((g) => g.items)
-      .filter((p) => !t || p.label.toLowerCase().includes(t))
-      .map((p) => ({ key: p.to, label: p.label, hint: 'Page', to: p.to, kind: 'page' }))
+      .filter((p) => !t || tr(p.k).toLowerCase().includes(t))
+      .map((p) => ({ key: p.to, label: tr(p.k), hint: 'Page', to: p.to, kind: 'page' }))
+    const extra: Item[] = t.length > 1 ? [
+      ...DUAS.filter((d) => d.title.toLowerCase().includes(t) || d.en?.toLowerCase().includes(t)).slice(0, 4)
+        .map((d) => ({ key: `d-${d.id}`, label: d.title, hint: `Dua · ${d.ref}`, to: `/duas?c=${d.cat}#${d.id}`, kind: 'page' as const })),
+      ...COURSES.flatMap((c) => c.lessons.map((l) => ({ c, l }))).filter(({ l }) => l.title.toLowerCase().includes(t)).slice(0, 3)
+        .map(({ c, l }) => ({ key: `l-${l.id}`, label: l.title, hint: `Lesson · ${c.title}`, to: `/learn/${c.id}/${l.id}`, kind: 'page' as const })),
+    ] : []
     if (!data) return pages
     const surahs: Item[] = (t ? searchSurahs(data, q) : data.surahs.slice(0, 0)).slice(0, 6)
       .map((s) => ({ key: `s${s.n}`, label: `${s.n}. ${s.tname}`, hint: s.ename, to: `/quran/${s.n}`, kind: 'surah', ar: s.name }))
     const ayahs: Item[] = t.length > 1 ? search(data, q, 8).map(({ s, a }) => ({
       key: `${s}:${a}`, label: data.surahs[s - 1].ayahs[a - 1][1], hint: `${data.surahs[s - 1].tname} ${s}:${a}`, to: `/quran/${s}#${a}`, kind: 'ayah',
     })) : []
-    return [...surahs, ...pages.slice(0, t ? 5 : 12), ...ayahs]
-  }, [q, data])
+    return [...surahs, ...pages.slice(0, t ? 5 : 12), ...extra, ...ayahs]
+  }, [q, data, tr])
 
   useEffect(() => { setSel(0) }, [q])
   useEffect(() => { listRef.current?.querySelector(`[data-i="${sel}"]`)?.scrollIntoView({ block: 'nearest' }) }, [sel])

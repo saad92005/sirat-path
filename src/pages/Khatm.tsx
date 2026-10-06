@@ -53,16 +53,16 @@ export default function Khatm() {
   return (
     <div className="fade-in mx-auto max-w-lg space-y-5">
       <h1 className="h-page">Khatm Planner</h1>
-      <section className="pattern rounded-3xl bg-[#0b2a24] p-6 text-white">
+      <section className="pattern rounded-3xl hero p-6 text-white">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-sm text-white/60">Day {Math.min(elapsed, plan.days)} of {plan.days}</p>
             <p className="text-5xl font-bold tabular-nums">{(pct * 100).toFixed(1)}%</p>
           </div>
-          <p className="flex items-center gap-1 text-[#d8b261]"><Flame size={18} />{st} day streak</p>
+          <p className="flex items-center gap-1 text-accent"><Flame size={18} />{st} day streak</p>
         </div>
         <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white/10">
-          <div className="h-full rounded-full bg-[#d8b261] transition-all" style={{ width: `${pct * 100}%` }} />
+          <div className="h-full rounded-full bg-accent transition-all" style={{ width: `${pct * 100}%` }} />
         </div>
         <p className="mt-2 text-xs text-white/50">{plan.doneIdx} / {TOTAL_AYAHS} ayahs</p>
       </section>

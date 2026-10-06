@@ -43,6 +43,11 @@ export default function QiblaPage() {
   }
 
   const bearing = qiblaBearing(location.lat, location.lng)
+  const toRad = (d: number) => (d * Math.PI) / 180
+  const [kLat, kLng] = [21.4225, 39.8262]
+  const dLat = toRad(kLat - location.lat), dLng = toRad(kLng - location.lng)
+  const hav = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(location.lat)) * Math.cos(toRad(kLat)) * Math.sin(dLng / 2) ** 2
+  const distanceKm = 6371 * 2 * Math.atan2(Math.sqrt(hav), Math.sqrt(1 - hav))
   const rotation = heading != null ? bearing - heading : bearing
   const aligned = heading != null && Math.abs(((rotation % 360) + 540) % 360 - 180) < 4
 
@@ -59,8 +64,8 @@ export default function QiblaPage() {
         </div>
         <div className="absolute inset-0 transition-transform duration-300 ease-out" style={{ transform: `rotate(${rotation}deg)` }}>
           <div className="absolute left-1/2 top-[8%] h-[42%] w-1.5 -translate-x-1/2 rounded-full bg-gradient-to-t from-transparent to-gold" />
-          <div className="absolute left-1/2 top-[3%] grid size-10 -translate-x-1/2 place-items-center rounded-lg bg-[#0b2a24] shadow-lg">
-            <div className="h-5 w-6 rounded-sm border-t-4 border-[#d8b261] bg-black" />
+          <div className="absolute left-1/2 top-[3%] grid size-10 -translate-x-1/2 place-items-center rounded-lg hero shadow-lg">
+            <div className="h-5 w-6 rounded-sm border-t-4 border-[var(--accent)] bg-black" />
           </div>
         </div>
         <div className="absolute left-1/2 top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold" />
@@ -68,7 +73,7 @@ export default function QiblaPage() {
 
       <div>
         <p className="text-4xl font-bold tabular-nums">{bearing.toFixed(1)}°</p>
-        <p className="text-sm text-muted">from true North, toward the Kaaba</p>
+        <p className="text-sm text-muted">from true North, toward the Kaʿbah · {Math.round(distanceKm).toLocaleString()} km to Makkah</p>
         {aligned && <p className="mt-2 font-semibold text-brand">You are facing the Qibla</p>}
       </div>
 

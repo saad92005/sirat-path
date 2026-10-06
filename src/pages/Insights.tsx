@@ -66,7 +66,7 @@ export default function Insights() {
         ))}
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_340px]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_340px]">
         <section className="card min-w-0 p-5">
           <p className="font-semibold">Reading activity · last 6 months</p>
           <div ref={(el) => { if (el) el.scrollLeft = el.scrollWidth }} className="no-scrollbar mt-4 overflow-x-auto">

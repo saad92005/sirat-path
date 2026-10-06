@@ -64,9 +64,9 @@ function Flashcards() {
       </div>
       <button onClick={() => setFlipped(!flipped)} className="relative h-72 w-full [perspective:1000px]">
         <div className={`absolute inset-0 transition-transform duration-500 [transform-style:preserve-3d] ${flipped ? '[transform:rotateY(180deg)]' : ''}`}>
-          <div className="pattern absolute inset-0 grid place-items-center rounded-3xl bg-[#0b2a24] text-white shadow-xl [backface-visibility:hidden]">
+          <div className="pattern absolute inset-0 grid place-items-center rounded-3xl hero shadow-xl [backface-visibility:hidden]">
             <div>
-              <p className="quran text-6xl text-[#d8b261]">{ar}</p>
+              <p className="quran text-6xl text-accent">{ar}</p>
               <p className="mt-6 flex items-center justify-center gap-1 text-xs text-white/50"><RotateCw size={12} />Tap to reveal</p>
             </div>
           </div>

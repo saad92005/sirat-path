@@ -108,3 +108,17 @@ export async function isSurahDownloaded(s: number) {
 }
 
 export function setRate(r: number) { if (el) el.playbackRate = r }
+
+// Sleep timer — pauses playback after N minutes.
+let sleepTimer: ReturnType<typeof setTimeout> | null = null
+let sleepAt: number | null = null
+export function setSleep(minutes: number) {
+  if (sleepTimer) clearTimeout(sleepTimer)
+  sleepTimer = null; sleepAt = null
+  if (minutes > 0) {
+    sleepAt = Date.now() + minutes * 60_000
+    sleepTimer = setTimeout(() => { el?.pause(); sleepAt = null; emit() }, minutes * 60_000)
+  }
+  emit()
+}
+export const getSleepAt = () => sleepAt

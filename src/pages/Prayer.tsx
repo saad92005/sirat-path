@@ -4,6 +4,7 @@ import { computeTimes, fmtTime, hijri, METHODS, nextPrayer, PRAYERS, PRAYER_LABE
 import { setSettings, useSettings } from '../lib/settings'
 import { notificationSupport } from '../lib/notify'
 import LocationPicker from '../components/LocationPicker'
+import SalahTracker from '../components/SalahTracker'
 
 export default function Prayer() {
   const s = useSettings()
@@ -27,7 +28,8 @@ export default function Prayer() {
 
   return (
     <div className="fade-in space-y-5">
-      <h1 className="h-page">Prayer Times</h1>
+      <h1 className="h-page">Salah</h1>
+      <SalahTracker />
 
       {!s.location || editLoc ? (
         <section className="card space-y-3 p-5">
@@ -55,7 +57,7 @@ export default function Prayer() {
                 const past = offset === 0 && r.times[p] < now
                 return (
                   <li key={p} className={`flex items-center justify-between px-5 py-4 transition ${isNext ? 'bg-brand text-brand-ink' : ''} ${past && !isNext ? 'opacity-50' : ''}`}>
-                    <span className={`font-medium ${p === 'sunrise' && !isNext ? 'text-muted' : ''}`}>{PRAYER_LABEL[p]}</span>
+                    <span className={`font-medium ${p === 'sunrise' && !isNext ? 'text-muted' : ''}`}>{p === 'dhuhr' && date.getDay() === 5 ? 'Jumuʿah' : PRAYER_LABEL[p]}</span>
                     <span className="text-lg font-semibold tabular-nums">{fmtTime(r.times[p])}</span>
                   </li>
                 )
@@ -70,7 +72,7 @@ export default function Prayer() {
           <MonthTable />
         </>
       )}
-      <div className="grid gap-5 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
 
       <section className="card space-y-4 p-5">
         <p className="font-semibold">Calculation</p>

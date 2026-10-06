@@ -138,13 +138,13 @@ export default function Reader() {
       </aside>
 
       <div className="min-w-0">
-        <section className="pattern relative overflow-hidden rounded-3xl bg-[#0b2a24] px-6 py-8 text-center text-white md:py-12">
-          <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-[#2fa58a]/20 blur-3xl" />
-          <p className="quran text-5xl text-[#d8b261] md:text-6xl">{surah.name}</p>
+        <section className="pattern relative overflow-hidden rounded-3xl hero px-6 py-8 text-center text-white md:py-12">
+          <div className="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full bg-white/10 blur-3xl" />
+          <p className="quran text-5xl text-accent md:text-6xl">{surah.name}</p>
           <h1 className="mt-2 text-xl font-bold md:text-2xl">{surah.n}. {surah.tname}</h1>
           <p className="text-sm text-white/60">{surah.ename} · {surah.type} · {surah.ayas} ayahs · Juz {juzOf(data, n, 1)} · Revelation order {surah.order}</p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
-            <button onClick={() => (isPlayingHere ? toggle() : play(n, 1))} className="inline-flex items-center gap-2 rounded-full bg-[#d8b261] px-5 py-2 text-sm font-semibold text-[#0b2a24] transition hover:brightness-110 active:scale-95">
+            <button onClick={() => (isPlayingHere ? toggle() : play(n, 1))} className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-[var(--hero-a)] transition hover:brightness-110 active:scale-95">
               {isPlayingHere && audio?.playing ? <Pause size={16} /> : <Play size={16} />} {isPlayingHere && audio?.playing ? 'Pause' : 'Play surah'}
             </button>
             <button onClick={startDownload} disabled={dl !== null && dl !== 'error'} className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm transition hover:bg-white/15 active:scale-95 disabled:opacity-80">

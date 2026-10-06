@@ -28,7 +28,7 @@ export default function CalendarPage() {
   return (
     <div className="fade-in space-y-5">
       <h1 className="h-page">Islamic Calendar</h1>
-      <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
         <section className="card overflow-hidden">
           <div className="flex items-center gap-2 border-b border-line p-4">
             <button className="icon-btn" onClick={() => shift(-1)} aria-label="Previous month"><ChevronLeft /></button>

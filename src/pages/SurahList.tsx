@@ -28,7 +28,7 @@ export default function SurahList() {
       </div>
 
       {tab === 'surah' ? (
-        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((s) => (
             <Link key={s.n} to={`/quran/${s.n}`} className="card group flex items-center gap-3 p-3.5 transition hover:-translate-y-0.5 hover:border-brand">
               <span className="grid size-10 shrink-0 rotate-45 place-items-center rounded-lg border border-gold/50 text-sm font-semibold transition group-hover:bg-brand group-hover:text-brand-ink">

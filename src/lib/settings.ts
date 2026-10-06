@@ -16,6 +16,12 @@ export type Settings = {
   playbackRate: number
   repeat: number
   sidebarSurahs: boolean
+  accent: 'emerald' | 'lavender' | 'teal'
+  lang: 'en' | 'ur' | 'ar'
+  name: string
+  dailyAyahGoal: number
+  sound: boolean
+  onboarded: boolean
 }
 
 const DEFAULTS: Settings = {
@@ -23,6 +29,7 @@ const DEFAULTS: Settings = {
   method: 'MuslimWorldLeague', madhab: 'Shafi', location: null, hijriOffset: 0,
   adjustments: {}, lastRead: null, notify: false,
   readMode: 'verse', playbackRate: 1, repeat: 1, sidebarSurahs: true,
+  accent: 'emerald', lang: 'en', name: '', dailyAyahGoal: 20, sound: false, onboarded: false,
 }
 
 const KEY = 'noor-settings'

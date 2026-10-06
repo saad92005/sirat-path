@@ -16,6 +16,8 @@ export default function SettingsPage() {
       app: 'noor', version: 1, exportedAt: new Date().toISOString(),
       bookmarks: await db.bookmarks.toArray(), notes: await db.notes.toArray(),
       reads: await db.reads.toArray(), khatm: await db.khatm.toArray(), dhikr: await db.dhikr.toArray(),
+      salah: await db.salah.toArray(), azkar: await db.azkar.toArray(), journal: await db.journal.toArray(), habits: await db.habits.toArray(),
+      habitLog: await db.habitLog.toArray(), learn: await db.learn.toArray(), ramadan: await db.ramadan.toArray(), saved: await db.saved.toArray(),
     }
     const url = URL.createObjectURL(new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' }))
     Object.assign(document.createElement('a'), { href: url, download: `noor-backup-${new Date().toLocaleDateString('en-CA')}.json` }).click()
@@ -26,9 +28,10 @@ export default function SettingsPage() {
     try {
       const d = JSON.parse(await f.text())
       if (d.app !== 'noor') throw new Error('Not a Noor backup file')
-      await db.transaction('rw', [db.bookmarks, db.notes, db.reads, db.khatm, db.dhikr], async () => {
-        await db.bookmarks.bulkPut(d.bookmarks ?? []); await db.notes.bulkPut(d.notes ?? [])
-        await db.reads.bulkPut(d.reads ?? []); await db.khatm.bulkPut(d.khatm ?? []); await db.dhikr.bulkPut(d.dhikr ?? [])
+      const tables = ['bookmarks', 'notes', 'reads', 'khatm', 'dhikr', 'salah', 'azkar', 'journal', 'habits', 'habitLog', 'learn', 'ramadan', 'saved'] as const
+      for (const t of tables) if (d[t] !== undefined && !Array.isArray(d[t])) throw new Error(`Invalid “${t}” section`)
+      await db.transaction('rw', tables.map((t) => db.table(t)), async () => {
+        for (const t of tables) if (d[t]) await db.table(t).bulkPut(d[t])
       })
       setMsg('Backup restored.')
     } catch (e) { setMsg(`Import failed: ${(e as Error).message}`) }
@@ -39,7 +42,29 @@ export default function SettingsPage() {
       <h1 className="h-page">Settings</h1>
 
       <section className="card space-y-4 p-5">
+        <p className="font-semibold">Profile</p>
+        <input className="input" placeholder="Your name (for greetings)" value={s.name} onChange={(e) => setSettings({ name: e.target.value })} />
+        <label className="block text-sm"><span className="text-muted">Daily Quran goal · {s.dailyAyahGoal} ayahs</span>
+          <input type="range" min={5} max={300} step={5} value={s.dailyAyahGoal} onChange={(e) => setSettings({ dailyAyahGoal: +e.target.value })} className="mt-2 w-full accent-[var(--brand)]" /></label>
+        <div className="text-sm"><span className="text-muted">Language</span>
+          <div className="mt-1 grid grid-cols-3 gap-2">
+            {([['en', 'English'], ['ur', 'اردو'], ['ar', 'العربية']] as const).map(([k, l]) => <button key={k} onClick={() => setSettings({ lang: k })} className={s.lang === k ? 'btn' : 'btn-ghost'}>{l}</button>)}
+          </div>
+          <p className="mt-1 text-xs text-muted">Navigation and key labels are translated; more screens are being localised.</p>
+        </div>
+        <label className="flex items-center justify-between text-sm">Tap sounds (Tasbih, Azkar)
+          <input type="checkbox" className="size-5 accent-[var(--brand)]" checked={s.sound} onChange={(e) => setSettings({ sound: e.target.checked })} /></label>
+      </section>
+
+      <section className="card space-y-4 p-5">
         <p className="font-semibold">Appearance</p>
+        <div className="grid grid-cols-3 gap-2">
+          {([['emerald', 'Emerald', '#0a3a2e', '#13644f'], ['lavender', 'Lavender', '#4b3290', '#8b6fd6'], ['teal', 'Teal', '#0b6b63', '#19a493']] as const).map(([k, l, a, b]) => (
+            <button key={k} onClick={() => setSettings({ accent: k })} className={`overflow-hidden rounded-2xl border-2 text-sm font-medium transition ${s.accent === k ? 'border-brand' : 'border-line'}`}>
+              <span className="block h-14" style={{ background: `linear-gradient(135deg, ${a}, ${b})` }} /><span className="block py-2">{l}</span>
+            </button>
+          ))}
+        </div>
         <div className="grid grid-cols-3 gap-2">
           {(['light', 'dark', 'system'] as const).map((t) => (
             <button key={t} onClick={() => setSettings({ theme: t })} className={`${s.theme === t ? 'btn' : 'btn-ghost'} capitalize`}>{t}</button>

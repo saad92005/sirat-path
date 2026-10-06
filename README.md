@@ -1,67 +1,42 @@
-# Noor — Quran & Prayer (free, offline-first PWA)
+# Noor — a free Islamic companion (PWA)
 
-A complete Quran companion that costs nothing to run: no paid APIs, no account, no credit card.
+A complete, offline-first Muslim companion that installs on your phone and costs nothing to run. There's no account, no paid API, no ads and no tracking.
 
-**Highlights:** responsive design with a sidebar dashboard on desktop and app-style bottom navigation on phones; a Ctrl+K command palette; Mushaf and verse-by-verse reading; Hifz (memorisation) mode with ayah repeat; reader keyboard shortcuts; sharing an ayah as an image; the 99 Names with flashcards; an Islamic calendar with Eids and white days; an Insights page with a reading heatmap and streaks; a printable monthly prayer timetable; and an install button.
+**Pillars:** Quran · Salah · Duas & Azkar · Hadith · Learning, plus Qibla, the Islamic calendar, Ramadan, Zakat, Hajj & Umrah, a reflection journal, habits, a kids mode and more.
 
-**Features:** Quran reader (Uthmani script + English translation), per-ayah recitation with 5 reciters and offline surah downloads, on-device search (English, Arabic, or `2:255`), bookmarks and notes, last-read resume, Khatm planner with streaks, prayer times, Qibla compass, Hijri date, Quranic duas, dhikr counter, light/dark theme, JSON backup and restore, and installation as a PWA that works fully offline.
+## Features
 
-## Run locally
+| Area | What you get |
+|---|---|
+| **Today** | Greeting, Hijri date, next-prayer countdown over a skyline hero, Quran goal ring, morning/evening azkar status, upcoming events, continue reading, daily reflection, Name of the Day |
+| **Quran** | 114 surahs (verified Tanzil Uthmani text), Pickthall translation, verse or Mushaf mode, Hifz mode, bookmarks, notes, last-read position, Khatm planner, share-as-image, keyboard shortcuts |
+| **Audio** | 5 reciters, continuous play, repeat per ayah, speed 0.75–1.5×, sleep timer, offline surah downloads, lock-screen metadata |
+| **Salah** | Local prayer calculation (12 methods, Hanafi/Shafi Asr, adjustments), Jumuʿah, daily tracker (on time / jamaʿah / late / missed), 7-day history, monthly printable timetable, reminders |
+| **Duas & Azkar** | 14 categories; every dua shows its Quran or hadith reference; azkar sessions with tap counters and daily completion |
+| **Tasbih** | Presets plus custom dhikr, haptics, optional sound, rounds, lifetime history |
+| **Hadith** | 9 collections (the six books, Muwatta, Nawawi 40, Qudsi), Arabic and English, graders' gradings, search, bookmarks. Loaded on demand and cached offline |
+| **Learn** | 7 original courses → lessons → quiz → progress, with sources cited |
+| **Ramadan** | Auto-detected; Suhoor/Iftar countdowns, 30-day tracker (fast, Quran, taraweeh, sadaqah), last ten nights |
+| **Zakat** | Transparent calculator, silver or gold nisab, assumptions shown |
+| **Hajj & Umrah** | Step-by-step timelines, checklists, duas |
+| **More** | Qibla compass and distance to Makkah, Hijri calendar with events, 99 Names (with flashcards), habits, private journal, Insights heatmap, kids mode, library, universal search (Ctrl+K) |
+| **Design** | Three themes (Emerald, Lavender, Teal), light/dark/system, English/Urdu/Arabic UI with RTL, desktop sidebar layout, mobile bottom nav and sheets |
+
+## Quick start
 
 ```bash
-git clone <your-repo-url> noor-quran
+git clone https://github.com/saad92005/noor-quran.git
 cd noor-quran
 npm install
-npm run dev        # http://localhost:5173
+npm run dev            # http://localhost:5173
 ```
 
-You don't need a `.env` file; the core app has no keys or secrets.
+No `.env` file is needed. See [docs/SETUP.md](docs/SETUP.md) for production builds and deployment.
 
-`npm run build && npm run preview` serves the production PWA (service worker + offline mode).
-`npm run data` regenerates `public/data/quran.json` from the verbatim sources in `data-src/`.
+## Docs
 
-## Deploy free (Vercel)
+[Architecture](docs/ARCHITECTURE.md) · [Setup & deploy](docs/SETUP.md) · [Free stack audit](docs/FREE_STACK.md) · [Data sources](docs/DATA_SOURCES.md) · [Religious content policy](docs/RELIGIOUS_CONTENT_POLICY.md) · [PWA](docs/PWA.md) · [Security & privacy](docs/SECURITY.md) · [Testing](docs/TESTING.md)
 
-1. Push to GitHub.
-2. On vercel.com, import the repo. The framework is detected as Vite, so no settings are needed.
-3. Open `your-project.vercel.app` on your phone and choose **Add to Home Screen** or **Install app**.
+## Can this project be run without spending money?
 
-Cloudflare Pages also works: build command `npm run build`, output folder `dist`, plus an SPA fallback.
-
-## Architecture
-
-- **Vite + React + TypeScript + Tailwind v4**, served as fully static files. There is no backend.
-- **Quran data** comes from one JSON file (about 2.2 MB, about 600 KB gzipped) that the service worker precaches, so reading and searching never hit a server.
-- **Personal data** (bookmarks, notes, Khatm, dhikr) lives in IndexedDB via Dexie. Preferences are kept in localStorage.
-- **Audio** is streamed from EveryAyah. Workbox caches it after the first play or download (CacheFirst, range requests).
-- **Prayer times and Qibla** are calculated with `adhan` in the browser. The **Hijri date** comes from `Intl` with the Umm al-Qura calendar.
-- **AI** sits behind an `AIProvider` interface (`src/lib/ai.ts`). The default is `NoAIProvider`, and the Ask page always returns verified ayahs and never makes up an answer.
-
-## Zero-cost audit
-
-| Service / dependency | Purpose | Required? | Free? | Credit card? | Limits | Alternative |
-|---|---|---|---|---|---|---|
-| Tanzil Quran text | Arabic text | Yes (bundled) | Yes, CC BY 3.0 | No | Must stay verbatim, with attribution | — |
-| Pickthall translation (via Tanzil) | English meaning | Yes (bundled) | Public domain | No | — | Add others in `data-src/` if their licence allows |
-| Tanzil metadata | Surah and juz info | Yes (bundled) | CC BY 3.0 | No | — | — |
-| EveryAyah.com | Recitation audio | Optional | Free public archive | No | Needs internet the first time each ayah is played | Any other free recitation CDN |
-| adhan (npm) | Prayer times, Qibla | Yes | MIT | No | — | — |
-| Browser Intl | Hijri date | Yes | Built-in | No | Rounds to ±1 day; you can adjust it in Settings | — |
-| Dexie, MiniSearch, React, React Router, Lucide | App libraries | Yes | MIT / ISC | No | — | — |
-| Amiri Quran, Inter fonts | Typography | Yes (bundled) | SIL OFL | No | — | — |
-| vite-plugin-pwa / Workbox | Offline mode, install | Yes | MIT | No | — | — |
-| Browser Notification API | Prayer reminders | Optional | Built-in | No | Fires only while the app is open or running in the background | — |
-| Geolocation / DeviceOrientation | Location, compass | Optional | Built-in | No | Some devices have no compass; the app falls back to showing the bearing | Manual city or coordinates |
-| Vercel Hobby | Hosting | For public URL | Free | No | Hobby use only, 100 GB bandwidth/month | Cloudflare Pages, GitHub Pages |
-| GitHub | Source code | Yes | Free | No | — | — |
-
-Not used: paid AI APIs, Supabase, Google Maps, analytics, Sentry, or email services.
-
-**Can this project be run without spending money? Yes.**
-
-## Known limitations
-
-- Prayer times are shown in your **device's** time zone, so if you pick a city in another time zone, the times appear in your local time.
-- Browsers don't guarantee prayer reminders after the app is fully closed, because there's no push server.
-- On-device AI explanations (WebLLM) and semantic search (Transformers.js) are planned but not built yet.
-- Only one translation is included for now. Most modern translations (for example Saheeh International and most Urdu ones) are copyrighted, so they're left out.
+**Yes.** See [docs/FREE_STACK.md](docs/FREE_STACK.md).

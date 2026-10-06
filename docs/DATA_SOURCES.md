@@ -1,0 +1,21 @@
+# Data sources & licensing
+
+| Content | Source | Licence | How it is used |
+|---|---|---|---|
+| Quran Arabic text (Uthmani v1.1) | [Tanzil Project](https://tanzil.net) | CC BY 3.0, verbatim copies only | Bundled byte-for-byte in `data-src/`; `.gitattributes` prevents line-ending changes; attribution on every reader page and in Sources |
+| Quran metadata (surahs, juz, sajdah) | Tanzil | CC BY 3.0 | Bundled |
+| English translation | M. M. Pickthall (1930), via Tanzil | Public domain (author d. 1936) | Bundled |
+| Recitation audio | [EveryAyah.com](https://everyayah.com) | Free public archive | Streamed; cached on the device only after the user plays or downloads it. Not bundled or redistributed |
+| Hadith (Arabic, English, grades) | [fawazahmed0/hadith-api](https://github.com/fawazahmed0/hadith-api) via jsDelivr | Open dataset. English translations are the work of their original translators and publishers | Fetched on demand when the user opens a book and cached on the device. Not bundled or redistributed in this repo |
+| Sunnah duas | Hadith references as numbered on sunnah.com | Arabic wording is classical text; English renderings are this project's own | `src/content/duas.ts` |
+| Learning courses, Hajj & Umrah guide, Zakat notes | Written for this project | Project licence | `src/content/` |
+| 99 Names | Widely circulated list (Tirmidhi narration) | Classical; glosses are this project's own | `src/lib/names.ts` |
+| Fonts | Amiri Quran, Inter | SIL OFL 1.1 | Bundled |
+
+## Adding a translation
+
+1. Confirm it is public domain or explicitly licensed for redistribution.
+2. Put the verbatim source file in `data-src/` along with its licence notice.
+3. Extend `scripts/build-data.mjs` and add a `sources` entry (name, author, licence, language, URL).
+
+Unlicensed or unclear content is never added.
