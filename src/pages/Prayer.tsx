@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Bell, BellOff, ChevronLeft, ChevronRight, MapPin } from 'lucide-react'
+import { Bell, BellOff, ChevronLeft, ChevronRight, MapPin, Printer } from 'lucide-react'
 import { computeTimes, fmtTime, hijri, METHODS, nextPrayer, PRAYERS, PRAYER_LABEL } from '../lib/prayer'
 import { setSettings, useSettings } from '../lib/settings'
 import { notificationSupport } from '../lib/notify'
@@ -67,8 +67,10 @@ export default function Prayer() {
               </p>
             )}
           </section>
+          <MonthTable />
         </>
       )}
+      <div className="grid gap-5 lg:grid-cols-2">
 
       <section className="card space-y-4 p-5">
         <p className="font-semibold">Calculation</p>
@@ -101,7 +103,7 @@ export default function Prayer() {
         </details>
       </section>
 
-      <section className="card flex items-start gap-4 p-5">
+      <section className="card flex items-start gap-4 p-5 lg:self-start">
         <div className="flex-1">
           <p className="font-semibold">Prayer reminders</p>
           <p className="mt-1 text-sm text-muted">
@@ -115,6 +117,46 @@ export default function Prayer() {
           {s.notify ? <Bell size={16} /> : <BellOff size={16} />}{s.notify ? 'On' : 'Off'}
         </button>
       </section>
+      </div>
     </div>
+  )
+}
+
+function MonthTable() {
+  const s = useSettings()
+  const [open, setOpen] = useState(false)
+  const now = new Date()
+  const days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+  return (
+    <section className="card overflow-hidden print:border-0">
+      <div className="flex items-center gap-2 p-4 print:hidden">
+        <button className="flex-1 text-left font-semibold" onClick={() => setOpen(!open)}>
+          {open ? '▾' : '▸'} Monthly timetable · {now.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+        </button>
+        {open && <button className="btn-ghost py-1.5" onClick={() => window.print()}><Printer size={15} />Print</button>}
+      </div>
+      {open && (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-sm tabular-nums">
+            <thead className="bg-surface-2 text-xs uppercase text-muted">
+              <tr><th className="px-3 py-2 text-left">Date</th>{PRAYERS.map((p) => <th key={p} className="px-2 py-2">{PRAYER_LABEL[p]}</th>)}</tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: days }, (_, i) => {
+                const d = new Date(now.getFullYear(), now.getMonth(), i + 1, 12)
+                const r = computeTimes(s, d)
+                const isToday = d.toDateString() === now.toDateString()
+                return (
+                  <tr key={i} className={`border-t border-line ${isToday ? 'bg-brand/10 font-semibold' : ''} ${d.getDay() === 5 ? 'text-brand' : ''}`}>
+                    <td className="px-3 py-2 text-left">{d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' })}</td>
+                    {r && PRAYERS.map((p) => <td key={p} className="px-2 py-2 text-center">{fmtTime(r.times[p])}</td>)}
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
   )
 }

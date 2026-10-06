@@ -18,6 +18,7 @@ export const ayahUrl = (reciter: string, s: number, a: number) =>
 type State = { s: number; a: number; playing: boolean; loading: boolean; error: string | null } | null
 
 let state: State = null
+let plays = 0
 const listeners = new Set<() => void>()
 const el = typeof Audio !== 'undefined' ? new Audio() : null
 const emit = () => listeners.forEach((l) => l())
@@ -32,6 +33,8 @@ if (el) {
   el.addEventListener('ended', () => {
     const q = getQuran()
     if (!state || !q) return
+    // Repeat each ayah N times (memorisation)
+    if (++plays < getSettings().repeat) { el.currentTime = 0; el.play().catch(() => {}); return }
     const surah = q.surahs[state.s - 1]
     if (state.a < surah.ayas) play(state.s, state.a + 1)
     else set({ playing: false })
@@ -42,7 +45,9 @@ export function play(s: number, a: number) {
   if (!el) return
   state = { s, a, playing: false, loading: true, error: null }
   emit()
+  plays = 0
   el.src = ayahUrl(getSettings().reciter, s, a)
+  el.playbackRate = getSettings().playbackRate
   el.play().catch(() => set({ loading: false }))
   if ('mediaSession' in navigator) {
     const q = getQuran()
@@ -101,3 +106,5 @@ export async function isSurahDownloaded(s: number) {
   const first = await cache.match(ayahUrl(reciter, s, 1))
   return Boolean(first && last)
 }
+
+export function setRate(r: number) { if (el) el.playbackRate = r }

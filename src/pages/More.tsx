@@ -1,9 +1,12 @@
 import { Link } from 'react-router-dom'
-import { BookMarked, Compass, HandHeart, Info, MessageCircleQuestion, Search, Settings, Target } from 'lucide-react'
+import { BarChart3, CalendarDays, Star, BookMarked, Compass, HandHeart, Info, MessageCircleQuestion, Search, Settings, Target } from 'lucide-react'
 
 const ITEMS = [
   { to: '/qibla', icon: Compass, label: 'Qibla', desc: 'Direction to the Kaaba' },
   { to: '/duas', icon: HandHeart, label: 'Duas', desc: 'Supplications from the Quran' },
+  { to: '/names', icon: Star, label: '99 Names', desc: 'Browse and learn with flashcards' },
+  { to: '/calendar', icon: CalendarDays, label: 'Islamic Calendar', desc: 'Hijri months, Eids and key days' },
+  { to: '/insights', icon: BarChart3, label: 'Insights', desc: 'Streaks, heatmap and stats' },
   { to: '/khatm', icon: Target, label: 'Khatm Planner', desc: 'Complete the Quran on schedule' },
   { to: '/saved', icon: BookMarked, label: 'Bookmarks & Notes', desc: 'Your saved ayahs and reflections' },
   { to: '/search', icon: Search, label: 'Search', desc: 'Find any ayah, offline' },

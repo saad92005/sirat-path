@@ -2,6 +2,8 @@
 
 A complete Quran companion that costs nothing to run: no paid APIs, no account, no credit card.
 
+**Highlights:** responsive design with a sidebar dashboard on desktop and app-style bottom navigation on phones; a Ctrl+K command palette; Mushaf and verse-by-verse reading; Hifz (memorisation) mode with ayah repeat; reader keyboard shortcuts; sharing an ayah as an image; the 99 Names with flashcards; an Islamic calendar with Eids and white days; an Insights page with a reading heatmap and streaks; a printable monthly prayer timetable; and an install button.
+
 **Features:** Quran reader (Uthmani script + English translation), per-ayah recitation with 5 reciters and offline surah downloads, on-device search (English, Arabic, or `2:255`), bookmarks and notes, last-read resume, Khatm planner with streaks, prayer times, Qibla compass, Hijri date, Quranic duas, dhikr counter, light/dark theme, JSON backup and restore, and installation as a PWA that works fully offline.
 
 ## Run locally

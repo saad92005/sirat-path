@@ -16,6 +16,9 @@ import SettingsPage from './pages/Settings'
 import More from './pages/More'
 import About from './pages/About'
 import Ask from './pages/Ask'
+import Names from './pages/Names'
+import CalendarPage from './pages/Calendar'
+import Insights from './pages/Insights'
 import { useSettings } from './lib/settings'
 import { usePrayerNotifications } from './lib/notify'
 
@@ -54,6 +57,9 @@ export default function App() {
           <Route path="/khatm" element={<Khatm />} />
           <Route path="/saved" element={<Saved />} />
           <Route path="/ask" element={<Ask />} />
+          <Route path="/names" element={<Names />} />
+          <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="/insights" element={<Insights />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/more" element={<More />} />
           <Route path="/about" element={<About />} />
