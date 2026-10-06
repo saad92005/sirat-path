@@ -55,7 +55,7 @@ export async function renderAyahImage(ar: string, en: string, ref: string, dark 
   ctx.fillStyle = gold; ctx.font = '600 34px Inter Variable, sans-serif'
   ctx.fillText(ref, W / 2, H - 130)
   ctx.globalAlpha = 0.6; ctx.fillStyle = ink; ctx.font = '26px Inter Variable, sans-serif'
-  ctx.fillText('Noor · Quran', W / 2, H - 85)
+  ctx.fillText('Sirat Path · Walk the straight path', W / 2, H - 85)
 
   return new Promise<Blob>((res) => c.toBlob((b) => res(b!), 'image/png'))
 }

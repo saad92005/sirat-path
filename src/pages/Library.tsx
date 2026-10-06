@@ -24,7 +24,7 @@ const EXTERNAL = [
 export default function Library() {
   return (
     <div>
-      <PageHeader title="Library" subtitle="Everything in Noor, plus trusted free resources" />
+      <PageHeader title="Library" subtitle="Everything in Sirat Path, plus trusted free resources" />
       <p className="mb-3 text-sm font-semibold text-muted">In this app (works offline)</p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {IN_APP.map((r) => (
@@ -42,7 +42,7 @@ export default function Library() {
           </a>
         ))}
       </div>
-      <p className="mt-6 text-xs text-muted">External sites are independent and have their own terms. Noor links to them and does not copy their content.</p>
+      <p className="mt-6 text-xs text-muted">External sites are independent and have their own terms. Sirat Path links to them and does not copy their content.</p>
     </div>
   )
 }

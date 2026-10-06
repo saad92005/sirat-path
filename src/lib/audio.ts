@@ -54,7 +54,7 @@ export function play(s: number, a: number) {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: `${q?.surahs[s - 1].tname ?? 'Surah'} ${s}:${a}`,
       artist: RECITERS[getSettings().reciter],
-      album: 'Noor Quran',
+      album: 'Sirat Path',
     })
   }
 }

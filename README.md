@@ -1,4 +1,6 @@
-# Noor — a free Islamic companion (PWA)
+# Sirat Path
+
+*Walk the straight path, step by step.*
 
 A complete, offline-first Muslim companion that installs on your phone and costs nothing to run. There's no account, no paid API, no ads and no tracking.
 
@@ -25,8 +27,8 @@ A complete, offline-first Muslim companion that installs on your phone and costs
 ## Quick start
 
 ```bash
-git clone https://github.com/saad92005/noor-quran.git
-cd noor-quran
+git clone https://github.com/saad92005/sirat-path.git
+cd sirat-path
 npm install
 npm run dev            # http://localhost:5173
 ```

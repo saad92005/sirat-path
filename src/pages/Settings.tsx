@@ -13,21 +13,21 @@ export default function SettingsPage() {
 
   async function exportData() {
     const dump = {
-      app: 'noor', version: 1, exportedAt: new Date().toISOString(),
+      app: 'sirat-path', version: 1, exportedAt: new Date().toISOString(),
       bookmarks: await db.bookmarks.toArray(), notes: await db.notes.toArray(),
       reads: await db.reads.toArray(), khatm: await db.khatm.toArray(), dhikr: await db.dhikr.toArray(),
       salah: await db.salah.toArray(), azkar: await db.azkar.toArray(), journal: await db.journal.toArray(), habits: await db.habits.toArray(),
       habitLog: await db.habitLog.toArray(), learn: await db.learn.toArray(), ramadan: await db.ramadan.toArray(), saved: await db.saved.toArray(),
     }
     const url = URL.createObjectURL(new Blob([JSON.stringify(dump, null, 2)], { type: 'application/json' }))
-    Object.assign(document.createElement('a'), { href: url, download: `noor-backup-${new Date().toLocaleDateString('en-CA')}.json` }).click()
+    Object.assign(document.createElement('a'), { href: url, download: `sirat-path-backup-${new Date().toLocaleDateString('en-CA')}.json` }).click()
     URL.revokeObjectURL(url)
   }
 
   async function importData(f: File) {
     try {
       const d = JSON.parse(await f.text())
-      if (d.app !== 'noor') throw new Error('Not a Noor backup file')
+      if (d.app !== 'sirat-path' && d.app !== 'noor') throw new Error('Not a Sirat Path backup file')
       const tables = ['bookmarks', 'notes', 'reads', 'khatm', 'dhikr', 'salah', 'azkar', 'journal', 'habits', 'habitLog', 'learn', 'ramadan', 'saved'] as const
       for (const t of tables) if (d[t] !== undefined && !Array.isArray(d[t])) throw new Error(`Invalid “${t}” section`)
       await db.transaction('rw', tables.map((t) => db.table(t)), async () => {

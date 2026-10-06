@@ -5,7 +5,8 @@ export default function About() {
   return (
     <div className="fade-in mx-auto max-w-xl space-y-5">
       <h1 className="h-page">Sources & About</h1>
-      <p className="text-muted">Noor is a free, open-source, offline-first Quran app. No account, no ads, no tracking. Your notes, bookmarks and location stay on your device.</p>
+      <p className="text-lg font-semibold text-brand">Sirat Path — Walk the straight path, step by step.</p>
+      <p className="text-muted">Sirat Path is a free, open-source, offline-first Quran app. No account, no ads, no tracking. Your notes, bookmarks and location stay on your device.</p>
       <section className="space-y-3">
         {data?.sources.map((s) => (
           <div key={s.id} className="card p-4 text-sm">

@@ -27,7 +27,7 @@ export default function Khatm() {
     return (
       <div className="fade-in mx-auto max-w-lg space-y-5">
         <h1 className="h-page">Khatm Planner</h1>
-        <p className="text-muted">Choose how many days you want to complete the Quran in. Noor splits it into daily portions.</p>
+        <p className="text-muted">Choose how many days you want to complete the Quran in. Sirat Path splits it into daily portions.</p>
         <div className="grid grid-cols-3 gap-2">
           {PRESETS.map((d) => <button key={d} onClick={() => setDays(d)} className={d === days ? 'btn' : 'btn-ghost'}>{d} days</button>)}
         </div>

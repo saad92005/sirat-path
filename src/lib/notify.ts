@@ -29,8 +29,8 @@ export function usePrayerNotifications() {
           fired.add(key)
           const body = `It is time for ${PRAYER_LABEL[p]}.`
           const reg = await navigator.serviceWorker?.getRegistration()
-          if (reg) reg.showNotification('Noor — Prayer time', { body, icon: '/icon-192.png', tag: key })
-          else new Notification('Noor — Prayer time', { body, icon: '/icon-192.png' })
+          if (reg) reg.showNotification('Sirat Path — Prayer time', { body, icon: '/icon-192.png', tag: key })
+          else new Notification('Sirat Path — Prayer time', { body, icon: '/icon-192.png' })
         }
       }
     }

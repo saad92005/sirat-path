@@ -2,7 +2,7 @@
 
 ## Why a static SPA (Vite + React), not Next.js
 
-Everything Noor does runs in the browser: prayer maths, Qibla, Hijri dates, search, storage and the tracker logic. Server rendering would add hosting cost and complexity without adding features, and a fully static build:
+Everything Sirat Path does runs in the browser: prayer maths, Qibla, Hijri dates, search, storage and the tracker logic. Server rendering would add hosting cost and complexity without adding features, and a fully static build:
 
 - deploys to any free static host (Vercel, Cloudflare Pages, GitHub Pages)
 - is completely precached by the service worker, so the app works offline from the second visit
@@ -27,7 +27,7 @@ public/data/    quran.json, generated from data-src/ by scripts/build-data.mjs
 | Hadith | fetched per book from hadith-api, cached by Workbox | Too large to bundle; licence reasons (see DATA_SOURCES) |
 | Audio | streamed from EveryAyah, cached on play/download | Not redistributed |
 | User data (bookmarks, notes, salah log, azkar, journal, habits, learning, Ramadan, dhikr) | IndexedDB via Dexie (`src/lib/db.ts`) | Private, offline, no account |
-| Preferences | `localStorage` (`noor-settings`) through a `useSyncExternalStore` store | Small and synchronous |
+| Preferences | `localStorage` (`sirat-settings`) through a `useSyncExternalStore` store | Small and synchronous |
 
 Backup/restore is a JSON export in Settings. Optional cloud sync (Supabase free tier) can be added behind the same `db` module; it is deliberately not required.
 

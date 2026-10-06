@@ -5,7 +5,7 @@ import { PageHeader } from '../components/ui'
 // Estimates only. Nisab thresholds: 85 g gold / 595 g silver (commonly cited contemporary values).
 // The user supplies current metal prices — no price API is used.
 
-const KEY = 'noor-zakat'
+const KEY = 'sirat-zakat'
 type Form = Record<string, number> & { goldPrice: number; silverPrice: number }
 const DEFAULT: Form = { goldPrice: 0, silverPrice: 0, cash: 0, bank: 0, goldGrams: 0, silverGrams: 0, investments: 0, business: 0, receivable: 0, debts: 0 }
 

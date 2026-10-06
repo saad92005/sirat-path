@@ -5,7 +5,7 @@ import { DUAS } from '../content/duas'
 import DuaCard from '../components/DuaCard'
 import { PageHeader, Tabs } from '../components/ui'
 
-const KEY = 'noor-hajj-checks'
+const KEY = 'sirat-hajj-checks'
 
 export default function Hajj() {
   const [tab, setTab] = useState<'umrah' | 'hajj'>('umrah')

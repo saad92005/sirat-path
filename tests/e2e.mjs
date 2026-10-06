@@ -9,7 +9,7 @@ async function sweep(tag, vp, theme, accent, lang, shots) {
   const p = await ctx.newPage()
   p.on('pageerror', e => errs.push(`${tag} ${p.url()}: ${e.message}`))
   p.on('console', m => m.type() === 'error' && !/404|Failed to load resource/.test(m.text()) && errs.push(`${tag} ${p.url()}: ${m.text()}`))
-  await p.goto(U); await p.evaluate(s => localStorage.setItem('noor-settings', s), seed(accent, lang))
+  await p.goto(U); await p.evaluate(s => localStorage.setItem('sirat-settings', s), seed(accent, lang))
   for (const r of ROUTES) {
     await p.goto(U + r); await p.waitForTimeout(r.startsWith('/hadith/') ? 3500 : 900)
     const ow = await p.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)

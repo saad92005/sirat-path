@@ -15,7 +15,7 @@ export type RamadanDay = { id: string; year: number; day: number; fasted: boolea
 export type SavedItem = { id: string; kind: 'dua' | 'hadith'; ref: string; createdAt: number }
 
 // Everything personal stays on-device in IndexedDB. No account required.
-export const db = new Dexie('noor') as Dexie & {
+export const db = new Dexie('sirat-path') as Dexie & {
   bookmarks: EntityTable<Bookmark, 'id'>
   notes: EntityTable<Note, 'id'>
   reads: EntityTable<ReadLog, 'day'>

@@ -44,7 +44,7 @@ export default function Ask() {
           {gpu === false
             ? 'Local AI is unavailable on this device. '
             : 'On-device AI explanations are not enabled yet. '}
-          Noor never sends your questions to a server. Below are the most relevant verified Quranic sources, found on your device.
+          Sirat Path never sends your questions to a server. Below are the most relevant verified Quranic sources, found on your device.
         </p>
       </div>
 

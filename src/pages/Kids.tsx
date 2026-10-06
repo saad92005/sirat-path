@@ -14,8 +14,8 @@ const KID_DUAS = ['food-before', 'food-after', 'sleep-name', 'wake', 'leave-home
 export default function Kids() {
   const { data } = useQuran()
   const [tab, setTab] = useState<'surahs' | 'letters' | 'duas' | 'learn' | 'quiz'>('surahs')
-  const [stars, setStars] = useState(() => Number(localStorage.getItem('noor-kids-stars') ?? 0))
-  const addStar = () => { const n = stars + 1; setStars(n); try { localStorage.setItem('noor-kids-stars', String(n)) } catch { /* ignore */ } tap(true) }
+  const [stars, setStars] = useState(() => Number(localStorage.getItem('sirat-kids-stars') ?? 0))
+  const addStar = () => { const n = stars + 1; setStars(n); try { localStorage.setItem('sirat-kids-stars', String(n)) } catch { /* ignore */ } tap(true) }
 
   const tabs = [
     { id: 'surahs', label: '📖 Surahs', bg: '#22c55e' },
@@ -29,7 +29,7 @@ export default function Kids() {
     <div className="space-y-5">
       <section className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-amber-300 via-orange-300 to-pink-300 p-6 text-[#3b2400]">
         <div className="absolute -end-6 -top-6 text-8xl opacity-30">🌙</div>
-        <p className="text-sm font-semibold">Noor Kids</p>
+        <p className="text-sm font-semibold">Sirat Path Kids</p>
         <h1 className="text-3xl font-extrabold">Let’s learn together! ✨</h1>
         <p className="mt-2 flex items-center gap-1 font-bold"><Star className="fill-current" size={18} />{stars} stars earned</p>
       </section>

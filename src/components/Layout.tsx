@@ -89,7 +89,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh md:ps-64">
       <aside className="fixed inset-y-0 start-0 z-40 hidden w-64 flex-col border-e border-line bg-surface/70 backdrop-blur-xl md:flex">
-        <Link to="/" className="flex h-16 items-center gap-2.5 px-5 text-lg font-bold"><Logo size={32} /> Noor</Link>
+        <Link to="/" className="flex h-[72px] items-center gap-2.5 px-5"><Logo size={34} /><span className="leading-tight"><span className="block text-lg font-bold">Sirat Path</span><span className="block text-[11px] text-muted">Walk the straight path, step by step</span></span></Link>
         <button onClick={() => setPalette(true)} className="mx-4 mb-2 flex items-center gap-2 rounded-xl border border-line bg-bg px-3 py-2 text-sm text-muted transition hover:border-brand">
           <Search size={15} /> {t('search')}… <kbd className="ms-auto rounded border border-line px-1.5 text-[10px]">Ctrl K</kbd>
         </button>
@@ -124,7 +124,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <header className="sticky top-0 z-30 border-b border-line/70 bg-bg/80 pt-[env(safe-area-inset-top)] backdrop-blur-xl md:hidden">
         <div className="flex h-14 items-center gap-2 px-4">
-          <Link to="/" className="flex items-center gap-2 font-semibold"><Logo /> Noor</Link>
+          <Link to="/" className="flex items-center gap-2 font-semibold"><Logo /> Sirat Path</Link>
           {install && <button className="chip ms-3 text-brand" onClick={install}><Download size={12} />Install</button>}
           <button className="icon-btn ms-auto" onClick={() => setSettings({ theme: dark ? 'light' : 'dark' })} aria-label="Toggle theme">
             {dark ? <Sun size={19} /> : <Moon size={19} />}

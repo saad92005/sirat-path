@@ -111,7 +111,7 @@ export default function Prayer() {
           <p className="mt-1 text-sm text-muted">
             {perm === 'unsupported'
               ? 'This browser does not support notifications.'
-              : 'Uses your browser’s notifications. Reminders fire while Noor is open or running in the background; browsers may not deliver them after the app is fully closed.'}
+              : 'Uses your browser’s notifications. Reminders fire while Sirat Path is open or running in the background; browsers may not deliver them after the app is fully closed.'}
           </p>
           {perm === 'denied' && <p className="mt-1 text-sm text-red-500">Notifications are blocked in browser settings.</p>}
         </div>

@@ -11,9 +11,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png'],
       manifest: {
-        name: 'Noor — Quran & Prayer',
-        short_name: 'Noor',
-        description: 'A free, offline-first Quran reader with prayer times, Qibla and dhikr.',
+        name: 'Sirat Path — Walk the straight path, step by step',
+        short_name: 'Sirat Path',
+        description: 'Walk the straight path, step by step. A free, offline-first Islamic companion: Quran, Salah, Duas, Hadith and more.',
         theme_color: '#0b2a24',
         background_color: '#0b2a24',
         display: 'standalone',

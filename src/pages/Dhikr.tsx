@@ -19,7 +19,7 @@ const PRESETS: Phrase[] = [
   { id: 'salawat', ar: 'ٱللَّٰهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ', tr: 'Allahumma salli ʿala Muhammad', en: 'O Allah, send blessings upon Muhammad', target: 100 },
 ]
 
-const CUSTOM_KEY = 'noor-custom-dhikr'
+const CUSTOM_KEY = 'sirat-custom-dhikr'
 const loadCustom = (): Phrase[] => { try { return JSON.parse(localStorage.getItem(CUSTOM_KEY) ?? '[]') } catch { return [] } }
 
 export default function DhikrPage() {

@@ -32,7 +32,7 @@ const DEFAULTS: Settings = {
   accent: 'emerald', lang: 'en', name: '', dailyAyahGoal: 20, sound: false, onboarded: false,
 }
 
-const KEY = 'noor-settings'
+const KEY = 'sirat-settings'
 let current: Settings = read()
 const listeners = new Set<() => void>()
 
