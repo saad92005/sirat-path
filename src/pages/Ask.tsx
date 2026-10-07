@@ -104,6 +104,7 @@ export default function Ask() {
             )
           })}
         </div>
+        {mode === 'cloud' && !online && <p className="flex gap-2 rounded-xl bg-gold/10 p-3 text-muted"><Info size={18} className="shrink-0 text-gold" />You're offline, so Cloud AI is paused. Matching verified verses are still shown below, searched on your device.</p>}
         {mode === 'local' && (gpu === null ? <p className="text-muted">Checking device…</p> : !gpu ? (
           <p className="flex gap-2 rounded-xl bg-gold/10 p-3 text-muted"><Info size={18} className="shrink-0 text-gold" /><span>On-device AI needs WebGPU, which this browser doesn't support. Try the latest Chrome or Edge on a laptop, or use <button className="font-semibold text-brand underline" onClick={() => setMode('cloud')}>Cloud AI</button>.</span></p>
         ) : ready ? (
