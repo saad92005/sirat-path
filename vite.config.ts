@@ -28,7 +28,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,json}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // The optional on-device AI runtime (~6 MB) is cached on first use instead of precached.
         globIgnores: ['**/ai-worker-*.js', '**/lib-*.js'],

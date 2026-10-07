@@ -16,7 +16,7 @@ export default function More() {
             {g.items.filter((i) => i.to !== '/').map(({ to, k, icon: Icon }) => {
               return (
                 <Link key={to} to={to} className="card feature-tile flex min-w-0 flex-col items-center gap-2.5 px-2 py-4 text-center text-xs font-medium">
-                  <FeatureIcon icon={Icon} /><span className="w-full truncate">{t(k)}</span>
+                  <FeatureIcon to={to} icon={Icon} /><span className="w-full truncate">{t(k)}</span>
                 </Link>
               )
             })}

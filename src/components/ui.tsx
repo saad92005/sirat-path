@@ -68,7 +68,21 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
   )
 }
 
-/** Feature icon inside a mihrab (mosque-arch) shape, emerald with a gold line icon. */
-export function FeatureIcon({ icon: Icon }: { icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }) {
-  return <span className="arch-icon"><Icon size={21} strokeWidth={1.8} /></span>
+/** 3D illustrated icons (Microsoft Fluent Emoji, MIT) bundled in /public/icons/3d. */
+const ICON3D: Record<string, string> = {
+  '/': 'home', '/quran': 'quran', '/hadith': 'hadith', '/ask': 'ask', '/search': 'search', '/prayer': 'salah',
+  '/duas': 'duas', '/azkar': 'azkar', '/dhikr': 'tasbih', '/qibla': 'qibla', '/ramadan': 'ramadan', '/hajj': 'hajj',
+  '/zakat': 'zakat', '/learn': 'learn', '/names': 'names', '/habits': 'habits', '/journal': 'journal', '/khatm': 'khatm',
+  '/insights': 'insights', '/calendar': 'calendar', '/kids': 'kids', '/library': 'library', '/saved': 'saved',
+  '/account': 'account', '/settings': 'settings', '/about': 'about',
+}
+
+/** Floating 3D object on a soft glow; falls back to the line icon for unknown routes. */
+export function FeatureIcon({ to, icon: Icon }: { to: string; icon: React.ComponentType<{ size?: number }> }) {
+  const name = ICON3D[to]
+  return (
+    <span className="obj-icon">
+      {name ? <img src={`/icons/3d/${name}.webp`} alt="" width={44} height={44} loading="lazy" decoding="async" draggable={false} /> : <Icon size={24} />}
+    </span>
+  )
 }

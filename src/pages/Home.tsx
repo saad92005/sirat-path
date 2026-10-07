@@ -161,7 +161,7 @@ export default function Home() {
         <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">
           {FEATURES.map(({ to, icon, label }) => (
             <Link key={to} to={to} className="feature-tile flex min-w-0 max-sm:[&:nth-child(n+13)]:hidden flex-col items-center gap-2.5 rounded-2xl border border-transparent px-1 pt-4 pb-3 text-center text-[11px] font-medium sm:border-line sm:bg-surface sm:text-xs">
-              <FeatureIcon icon={icon} />
+              <FeatureIcon to={to} icon={icon} />
               <span className="w-full truncate">{label}</span>
             </Link>
           ))}

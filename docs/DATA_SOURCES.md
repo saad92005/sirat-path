@@ -21,3 +21,4 @@
 3. Extend `scripts/build-data.mjs` and add a `sources` entry (name, author, licence, language, URL).
 
 Unlicensed or unclear content is never added.
+| Feature icons (3D) | [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) | MIT | Bundled (resized to 128px WebP) in public/icons/3d |
