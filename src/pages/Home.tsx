@@ -15,7 +15,7 @@ import { streakOf } from '../lib/stats'
 import { shareAyahImage } from '../lib/shareImage'
 import Skyline from '../components/Skyline'
 import { useT, type StrKey } from '../lib/i18n'
-import { Ring } from '../components/ui'
+import { FeatureIcon, GEMS, Ring } from '../components/ui'
 
 function useNow(ms = 1000) {
   const [now, setNow] = useState(() => new Date())
@@ -24,20 +24,20 @@ function useNow(ms = 1000) {
 }
 
 const FEATURES = [
-  { to: '/quran', icon: BookOpen, label: 'Quran', tint: '#0f766e' },
-  { to: '/hadith', icon: ScrollText, label: 'Hadith', tint: '#7c3aed' },
-  { to: '/azkar', icon: BookHeart, label: 'Azkar', tint: '#db2777' },
-  { to: '/dhikr', icon: Sparkles, label: 'Tasbih', tint: '#d97706' },
-  { to: '/qibla', icon: Compass, label: 'Qibla', tint: '#2563eb' },
-  { to: '/learn', icon: GraduationCap, label: 'Learn', tint: '#059669' },
-  { to: '/names', icon: Star, label: '99 Names', tint: '#ca8a04' },
-  { to: '/ramadan', icon: Moon, label: 'Ramadan', tint: '#4f46e5' },
-  { to: '/zakat', icon: HandCoins, label: 'Zakat', tint: '#16a34a' },
-  { to: '/hajj', icon: Plane, label: 'Hajj', tint: '#0891b2' },
-  { to: '/habits', icon: ListChecks, label: 'Habits', tint: '#e11d48' },
-  { to: '/journal', icon: NotebookPen, label: 'Journal', tint: '#9333ea' },
-  { to: '/kids', icon: Smile, label: 'Kids', tint: '#f59e0b' },
-  { to: '/duas', icon: HandHeart, label: 'Duas', tint: '#0d9488' },
+  { to: '/quran', icon: BookOpen, label: 'Quran' },
+  { to: '/hadith', icon: ScrollText, label: 'Hadith' },
+  { to: '/azkar', icon: BookHeart, label: 'Azkar' },
+  { to: '/dhikr', icon: Sparkles, label: 'Tasbih' },
+  { to: '/qibla', icon: Compass, label: 'Qibla' },
+  { to: '/learn', icon: GraduationCap, label: 'Learn' },
+  { to: '/names', icon: Star, label: '99 Names' },
+  { to: '/ramadan', icon: Moon, label: 'Ramadan' },
+  { to: '/zakat', icon: HandCoins, label: 'Zakat' },
+  { to: '/hajj', icon: Plane, label: 'Hajj' },
+  { to: '/habits', icon: ListChecks, label: 'Habits' },
+  { to: '/journal', icon: NotebookPen, label: 'Journal' },
+  { to: '/kids', icon: Smile, label: 'Kids' },
+  { to: '/duas', icon: HandHeart, label: 'Duas' },
 ]
 
 export default function Home() {
@@ -112,12 +112,12 @@ export default function Home() {
 
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-1 lg:gap-4">
           {/* Daily goal */}
-          <Link to="/insights" className="card flex items-center gap-4 p-4 transition hover:border-brand lg:p-5">
+          <Link to="/insights" className="card flex flex-col items-start gap-2.5 p-4 transition hover:border-brand min-[420px]:flex-row min-[420px]:items-center min-[420px]:gap-4 lg:p-5">
             <Ring pct={goalPct} size={56}><span className="text-sm font-bold tabular-nums">{Math.round(goalPct * 100)}%</span></Ring>
             <div className="min-w-0">
               <p className="text-xs text-muted">{t('quranGoal')}</p>
-              <p className="font-semibold">{todayCount}/{s.dailyAyahGoal} {t('ayahs')}</p>
-              <p className="text-xs text-muted">🔥 {streak} {t('dayStreak')}</p>
+              <p className="whitespace-nowrap font-semibold">{todayCount}/{s.dailyAyahGoal} {t('ayahs')}</p>
+              <p className="whitespace-nowrap text-xs text-muted">🔥 {streak} {t('dayStreak')}</p>
             </div>
           </Link>
           {/* Azkar */}
@@ -158,11 +158,11 @@ export default function Home() {
       {/* All features */}
       <section>
         <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">{t('allFeatures')}</h2><Link to="/more" className="text-sm text-brand">{t('seeAll')}</Link></div>
-        <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-7">
-          {FEATURES.map(({ to, icon: Icon, label, tint }) => (
-            <Link key={to} to={to} className="group flex flex-col items-center gap-1.5 rounded-2xl py-2 text-center text-[11px] font-medium transition active:scale-95 md:text-xs">
-              <span className="grid size-13 place-items-center rounded-2xl transition group-hover:-translate-y-0.5 group-hover:shadow-md" style={{ background: `${tint}1f`, color: tint }}><Icon size={22} /></span>
-              {label}
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">
+          {FEATURES.map(({ to, icon, label }, i) => (
+            <Link key={to} to={to} className="feature-tile flex min-w-0 max-sm:[&:nth-child(n+13)]:hidden flex-col items-center gap-2 rounded-2xl border border-transparent px-1 py-3 text-center text-[11px] font-medium sm:border-line sm:bg-surface sm:text-xs">
+              <FeatureIcon icon={icon} gem={GEMS[i % GEMS.length]} />
+              <span className="w-full truncate">{label}</span>
             </Link>
           ))}
         </div>

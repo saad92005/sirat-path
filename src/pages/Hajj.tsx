@@ -30,7 +30,7 @@ export default function Hajj() {
           return (
             <li key={k} className="relative">
               <button onClick={() => toggle(k)} aria-label="Mark step done"
-                className={`absolute -start-6 top-4 grid size-6 place-items-center rounded-full border-2 transition ${checks[k] ? 'border-brand bg-brand text-brand-ink' : 'border-line bg-bg text-muted'}`}>
+                className={`absolute -start-6 top-4 grid size-6 place-items-center rounded-full border-2 transition after:absolute after:-inset-2.5 after:content-[""] ${checks[k] ? 'border-brand bg-brand text-brand-ink' : 'border-line bg-bg text-muted'}`}>
                 {checks[k] ? <Check size={13} /> : <span className="text-[10px] font-bold">{i + 1}</span>}
               </button>
               <div className={`card ms-3 overflow-hidden transition ${open === i ? 'border-brand/50' : ''}`}>

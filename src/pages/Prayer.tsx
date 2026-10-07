@@ -43,7 +43,7 @@ export default function Prayer() {
         </section>
       ) : (
         <>
-          <button onClick={() => setEditLoc(true)} className="chip hover:text-ink"><MapPin size={12} />{s.location.label} · change</button>
+          <button onClick={() => setEditLoc(true)} className="chip hover:text-ink"><MapPin size={12} />{s.location.label || `${s.location.lat.toFixed(2)}, ${s.location.lng.toFixed(2)}`} · change</button>
 
           <section className="card overflow-hidden">
             <div className="flex items-center justify-between border-b border-line p-3">
