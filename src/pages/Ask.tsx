@@ -27,7 +27,7 @@ export default function Ask() {
   const [usedModel, setUsedModel] = useState<string | null>(null)
   const setMode = (m: Mode) => { setModeState(m); try { localStorage.setItem(MODE_KEY, m) } catch { /* ignore */ } }
 
-  useEffect(() => { hasWebGPU().then(setGpu) }, [])
+  useEffect(() => { hasWebGPU().then((g) => { setGpu(g); if (!g) setModeState((m) => (m === 'local' ? 'cloud' : m)) }) }, [])
   useEffect(() => { isModelCached(model).then(setCached); setReady(isModelLoaded() === model) }, [model])
 
   // Step 1 — retrieval: verified ayahs only, ranked on-device.
@@ -82,15 +82,28 @@ export default function Ask() {
 
       {/* AI mode */}
       <section className="card mt-4 space-y-3 p-4 text-sm">
-        <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-surface-2 p-1">
-          {([['cloud', Cloud, 'Cloud AI'], ['local', Cpu, 'On-device'], ['off', ShieldOff, 'Sources only']] as const).map(([m, Icon, label]) => (
-            <button key={m} onClick={() => setMode(m)} className={`flex items-center justify-center gap-1.5 rounded-lg py-2 text-xs font-medium transition sm:text-sm ${mode === m ? 'bg-surface text-brand shadow-sm' : 'text-muted'}`}><Icon size={15} />{label}</button>
-          ))}
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          {([
+            ['cloud', Cloud, 'Cloud AI', 'Fast answers · free', false],
+            ['local', Cpu, 'On-device', gpu === false ? 'Not supported here' : 'Private · offline', gpu === false],
+            ['off', ShieldOff, 'Sources only', 'No AI · verses only', false],
+          ] as const).map(([m, Icon, label, sub, disabled]) => {
+            const on = mode === m
+            return (
+              <button key={m} type="button" disabled={disabled} onClick={() => setMode(m)} aria-pressed={on}
+                className={`flex items-center gap-3 rounded-2xl border-2 p-3 text-start transition ${on ? 'border-brand bg-brand/10 shadow-sm' : 'border-line hover:border-brand/40'} ${disabled ? 'cursor-not-allowed opacity-45' : ''}`}>
+                <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${on ? 'bg-brand text-brand-ink' : 'bg-surface-2 text-muted'}`}><Icon size={19} /></span>
+                <span className="min-w-0 flex-1">
+                  <span className={`block text-sm font-semibold ${on ? 'text-brand' : ''}`}>{label}</span>
+                  <span className="block truncate text-xs text-muted">{sub}</span>
+                </span>
+                <span className={`grid size-5 shrink-0 place-items-center rounded-full border-2 ${on ? 'border-brand' : 'border-line'}`}>{on && <span className="size-2.5 rounded-full bg-brand" />}</span>
+              </button>
+            )
+          })}
         </div>
-        {mode === 'cloud' && <p className="flex gap-2 text-muted"><Cloud size={18} className="shrink-0 text-brand" /><span>Free cloud AI (Groq, open-weight models). Your <b>question</b> and the matched verse references are sent to Groq to write a short explanation; nothing else leaves your device. Answers are checked against the verified sources.</span></p>}
-        {mode === 'off' && <p className="flex gap-2 text-muted"><Info size={18} className="shrink-0 text-gold" />No AI — you'll see the most relevant verified Quranic sources only. Nothing leaves your device.</p>}
         {mode === 'local' && (gpu === null ? <p className="text-muted">Checking device…</p> : !gpu ? (
-          <p className="flex gap-2 text-muted"><Info size={18} className="shrink-0 text-gold" />Local AI is unavailable on this device (no WebGPU). Choose Cloud AI, or use Sources only.</p>
+          <p className="flex gap-2 rounded-xl bg-gold/10 p-3 text-muted"><Info size={18} className="shrink-0 text-gold" /><span>On-device AI needs WebGPU, which this browser doesn't support. Try the latest Chrome or Edge on a laptop, or use <button className="font-semibold text-brand underline" onClick={() => setMode('cloud')}>Cloud AI</button>.</span></p>
         ) : ready ? (
           <p className="flex items-center gap-2 text-brand"><Cpu size={18} />On-device AI is ready · {LOCAL_MODELS.find((m) => m.id === model)?.label}. Runs privately on your device.</p>
         ) : (
