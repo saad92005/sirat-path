@@ -68,19 +68,7 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
   )
 }
 
-/** Jewel-tone gradient pairs for feature icons (light → deep). */
-export const GEMS: [string, string][] = [
-  ['#34d399', '#047857'], ['#a78bfa', '#6d28d9'], ['#f472b6', '#be185d'], ['#fbbf24', '#b45309'],
-  ['#60a5fa', '#1d4ed8'], ['#2dd4bf', '#0f766e'], ['#facc15', '#a16207'], ['#818cf8', '#4338ca'],
-  ['#4ade80', '#15803d'], ['#22d3ee', '#0e7490'], ['#fb7185', '#be123c'], ['#c084fc', '#7e22ce'],
-  ['#fdba74', '#c2410c'], ['#5eead4', '#115e59'],
-]
-
-/** Glossy gradient squircle with a white icon and a faint 8-point star watermark. */
-export function FeatureIcon({ icon: Icon, gem, size = 'md' }: { icon: React.ComponentType<{ size?: number; strokeWidth?: number }>; gem: [string, string]; size?: 'md' | 'lg' }) {
-  return (
-    <span className={`gem-icon ${size === 'lg' ? 'size-14' : 'size-12'}`} style={{ '--g1': gem[0], '--g2': gem[1] } as React.CSSProperties}>
-      <Icon size={size === 'lg' ? 25 : 22} strokeWidth={2.1} />
-    </span>
-  )
+/** Feature icon inside a mihrab (mosque-arch) shape, emerald with a gold line icon. */
+export function FeatureIcon({ icon: Icon }: { icon: React.ComponentType<{ size?: number; strokeWidth?: number }> }) {
+  return <span className="arch-icon"><Icon size={21} strokeWidth={1.8} /></span>
 }

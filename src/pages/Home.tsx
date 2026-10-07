@@ -15,7 +15,7 @@ import { streakOf } from '../lib/stats'
 import { shareAyahImage } from '../lib/shareImage'
 import Skyline from '../components/Skyline'
 import { useT, type StrKey } from '../lib/i18n'
-import { FeatureIcon, GEMS, Ring } from '../components/ui'
+import { FeatureIcon, Ring } from '../components/ui'
 
 function useNow(ms = 1000) {
   const [now, setNow] = useState(() => new Date())
@@ -159,9 +159,9 @@ export default function Home() {
       <section>
         <div className="mb-3 flex items-center justify-between"><h2 className="font-semibold">{t('allFeatures')}</h2><Link to="/more" className="text-sm text-brand">{t('seeAll')}</Link></div>
         <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">
-          {FEATURES.map(({ to, icon, label }, i) => (
-            <Link key={to} to={to} className="feature-tile flex min-w-0 max-sm:[&:nth-child(n+13)]:hidden flex-col items-center gap-2 rounded-2xl border border-transparent px-1 py-3 text-center text-[11px] font-medium sm:border-line sm:bg-surface sm:text-xs">
-              <FeatureIcon icon={icon} gem={GEMS[i % GEMS.length]} />
+          {FEATURES.map(({ to, icon, label }) => (
+            <Link key={to} to={to} className="feature-tile flex min-w-0 max-sm:[&:nth-child(n+13)]:hidden flex-col items-center gap-2.5 rounded-2xl border border-transparent px-1 pt-4 pb-3 text-center text-[11px] font-medium sm:border-line sm:bg-surface sm:text-xs">
+              <FeatureIcon icon={icon} />
               <span className="w-full truncate">{label}</span>
             </Link>
           ))}
