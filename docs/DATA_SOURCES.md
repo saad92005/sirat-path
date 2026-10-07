@@ -22,3 +22,5 @@
 
 Unlicensed or unclear content is never added.
 | Feature icons (3D) | [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) | MIT | Bundled (resized to 128px WebP) in public/icons/3d |
+| Magnetic declination (Qibla compass) | World Magnetic Model 2025 via [geomagnetism](https://github.com/naturalatlas/geomagnetism) | Public domain model / Apache-2.0 library | Bundled, computed on-device |
+| Qibla map | [OpenStreetMap](https://www.openstreetmap.org/copyright) tiles via Leaflet (BSD-2) | ODbL, attribution shown | Streamed on demand |
