@@ -61,3 +61,12 @@ export function fromAbs(q: QuranData, idx: number) {
   const s = q.surahs.findLast((x) => x.start <= idx) ?? q.surahs[0]
   return { s: s.n, a: idx - s.start + 1 }
 }
+
+/** Resolves once the bundled Quran data is loaded (for non-React callers). */
+export function ensureQuran(): Promise<QuranData> {
+  if (data) return Promise.resolve(data)
+  return new Promise((res, rej) => {
+    const l = () => { if (data) { listeners.delete(l); res(data) } else if (error) { listeners.delete(l); rej(new Error(error)) } }
+    listeners.add(l); load()
+  })
+}

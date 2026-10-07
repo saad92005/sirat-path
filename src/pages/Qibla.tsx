@@ -4,6 +4,7 @@ import { qiblaBearing } from '../lib/prayer'
 import { setSettings, useSettings } from '../lib/settings'
 import { declination, delta, headingFromEuler, KAABA, norm } from '../lib/compass'
 import LocationPicker from '../components/LocationPicker'
+import { useOnline } from '../lib/online'
 
 const QiblaMap = lazy(() => import('../components/QiblaMap'))
 
@@ -22,6 +23,7 @@ export default function QiblaPage() {
   const decl = location ? declination(location.lat, location.lng) : 0
   const declRef = useRef(decl); declRef.current = decl
   const buzzed = useRef(false)
+  const online = useOnline()
 
   // Compass: tilt-compensated, corrected to true north, screen-rotation aware, low-pass filtered.
   useEffect(() => {
@@ -163,6 +165,7 @@ export default function QiblaPage() {
           {showMap ? (
             <Suspense fallback={<div className="grid h-80 place-items-center rounded-2xl border border-line"><Loader2 className="animate-spin text-muted" /></div>}>
               <QiblaMap lat={location.lat} lng={location.lng} accuracy={gps.acc} />
+              {!online && <p className="text-xs text-gold">Offline: map areas you viewed before still show; the compass and bearing above work fully offline.</p>}
               <p className="text-xs text-muted">The gold line is the exact shortest path to the Kaʿbah. Line it up with a street or wall you can see.</p>
             </Suspense>
           ) : (

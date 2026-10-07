@@ -77,7 +77,7 @@ function useFetch<T>(url: string | null, fn?: () => Promise<T>) {
 }
 
 function Offline() {
-  return <div className="card flex flex-col items-center gap-2 p-10 text-center text-sm text-muted"><WifiOff />This collection hasn’t been opened before and you’re offline. Connect once to view and cache it.</div>
+  return <div className="card flex flex-col items-center gap-2 p-10 text-center text-sm text-muted"><WifiOff />You’re offline and this part of the collection isn’t saved yet.<Link to="/settings#offline" className="btn-ghost mt-2">Download collections for offline</Link><span className="text-xs">Settings → Offline downloads saves whole collections to your phone.</span></div>
 }
 
 function CollectionView({ c }: { c: string }) {

@@ -5,6 +5,7 @@ import { RECITERS } from '../lib/audio'
 import { db } from '../lib/db'
 import { hijri } from '../lib/prayer'
 import LocationPicker from '../components/LocationPicker'
+import OfflinePanel from '../components/OfflinePanel'
 
 export default function SettingsPage() {
   const s = useSettings()
@@ -81,6 +82,7 @@ export default function SettingsPage() {
         </label>
       </section>
 
+      <OfflinePanel />
       <section className="card space-y-3 p-5">
         <p className="font-semibold">Recitation</p>
         <select className="input" value={s.reciter} onChange={(e) => setSettings({ reciter: e.target.value })}>

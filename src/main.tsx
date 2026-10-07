@@ -4,6 +4,10 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App'
 import { registerSW } from 'virtual:pwa-register'
+import { requestPersistence } from './lib/offline'
+
+// Ask the browser to keep offline data (Quran audio, hadith, settings) from being evicted — matters most on iOS.
+requestPersistence()
 
 // Keep installed copies current: check for a new version on load, hourly, and when the app regains
 // focus; when a new service worker takes over, reload once so users never get stuck on an old build.

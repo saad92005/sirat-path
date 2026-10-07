@@ -47,13 +47,19 @@ export default defineConfig({
             // Optional study layer (tajweed, word-by-word, tafsir, extra translations).
             urlPattern: /^https:\/\/api\.quran\.com\/api\/v4\/.*/,
             handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'quran-study', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 1500 } },
+            options: { cacheName: 'quran-study', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 4000 } },
           },
           {
             // Hadith sections — fetched on demand, kept for offline re-reading.
             urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/gh\/fawazahmed0\/hadith-api@1\/.*\.json$/,
             handler: 'StaleWhileRevalidate',
-            options: { cacheName: 'hadith', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 400 } },
+            options: { cacheName: 'hadith', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 8000 } },
+          },
+          {
+            // Map tiles for the Qibla map: keep the ones already seen for offline use.
+            urlPattern: /^https:\/\/tile\.openstreetmap\.org\/.*\.png$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'osm-tiles', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 30 } },
           },
           {
             // Recitation audio streamed from EveryAyah; cached only once the user plays/downloads it.

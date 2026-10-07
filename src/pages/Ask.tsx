@@ -6,6 +6,7 @@ import { search } from '../lib/search'
 import { FreeRemoteAIProvider, hasWebGPU, isModelCached, isModelLoaded, loadLocalModel, LOCAL_MODELS, LocalAIProvider, validateCitations, type Source } from '../lib/ai'
 import Loading from '../components/Loading'
 import { PageHeader } from '../components/ui'
+import { useOnline } from '../lib/online'
 
 const STOP = new Set('what does the quran say about is are a an of to in on for and or how why who when do does i me my you we our it be with from by as at this that tell explain allah islam'.split(' '))
 const MODEL_KEY = 'sirat-ai-model'
@@ -25,6 +26,7 @@ export default function Ask() {
   const [aiErr, setAiErr] = useState<string | null>(null)
   const [mode, setModeState] = useState<Mode>(() => (localStorage.getItem(MODE_KEY) as Mode) ?? 'cloud')
   const [usedModel, setUsedModel] = useState<string | null>(null)
+  const online = useOnline()
   const setMode = (m: Mode) => { setModeState(m); try { localStorage.setItem(MODE_KEY, m) } catch { /* ignore */ } }
 
   useEffect(() => { hasWebGPU().then((g) => { setGpu(g); if (!g) setModeState((m) => (m === 'local' ? 'cloud' : m)) }) }, [])
@@ -56,7 +58,7 @@ export default function Ask() {
 
   // Step 2 — generation grounded in the retrieved sources, Step 3 — citation validation.
   useEffect(() => {
-    const active = mode === 'cloud' || (mode === 'local' && ready)
+    const active = (mode === 'cloud' && online) || (mode === 'local' && ready)
     if (!active || !data || !submitted || hits.length === 0) { setAnswer(null); return }
     let live = true
     const sources: Source[] = hits.slice(0, 6).map(({ s, a }) => ({ ref: `${s}:${a}`, text: data.surahs[s - 1].ayahs[a - 1][1] }))
@@ -67,7 +69,7 @@ export default function Ask() {
       : LocalAIProvider.explain(submitted, sources, (t) => live && setAnswer({ text: t, done: false, valid: [], invalid: [], declined: false }))
     run.then(finish).catch((e) => { if (live) { setAnswer(null); setAiErr((e as Error).message) } })
     return () => { live = false }
-  }, [mode, ready, submitted, hits, data])
+  }, [mode, ready, submitted, hits, data, online])
 
   if (!data) return <Loading error={error} />
   const rejected = answer?.done && !answer.declined && answer.valid.length === 0
