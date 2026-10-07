@@ -84,3 +84,11 @@ grant execute on function public.delete_my_account() to authenticated;
 
 -- Make yourself admin (run manually, replacing the email):
 -- update public.profiles set role = 'admin' where id = (select id from auth.users where email = 'you@example.com');
+
+-- Table privileges for signed-in users (newer Supabase projects don't grant these by default).
+-- Row Level Security above still limits every row to its owner / admins.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.user_records to authenticated;
+grant select, update on public.profiles to authenticated;
+grant select, insert, update on public.content_reports to authenticated;
+grant usage, select on all sequences in schema public to authenticated;
