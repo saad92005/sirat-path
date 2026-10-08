@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Download, Share, X } from 'lucide-react'
+import { Download, Share, Share2, X } from 'lucide-react'
 import { isStandalone, useInstall } from '../lib/install'
-import { shareApp } from '../lib/share'
+import { shareApp, shareAppWhatsApp } from '../lib/share'
 import { WhatsAppIcon } from './WhatsAppButton'
 
 const KEY = 'sp-install-dismissed'
@@ -40,9 +40,10 @@ export default function InstallBanner() {
           </>
         )}
       </div>
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="flex shrink-0 flex-wrap items-center gap-2">
         {install && !standalone && <button className="btn" onClick={install}><Download size={16} />Install app</button>}
-        <button className="btn-ghost" onClick={shareApp}><WhatsAppIcon size={16} />Share app</button>
+        <button className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-[#25D366] px-4 text-sm font-semibold text-white shadow-sm active:scale-95" onClick={shareAppWhatsApp}><WhatsAppIcon size={20} />WhatsApp</button>
+        <button className="icon-btn size-10" aria-label="Share via other apps" title="Other apps" onClick={shareApp}><Share2 size={20} /></button>
         {!standalone && <button className="icon-btn" aria-label="Dismiss" onClick={dismiss}><X size={17} /></button>}
       </div>
     </section>

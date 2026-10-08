@@ -135,11 +135,11 @@ function HadithCard({ h, ar, c, s, name }: { h: H; ar?: string; c: string; s: st
   const ref = `${name} ${h.hadithnumber}`
   return (
     <article id={`h${h.hadithnumber}`} className="card p-5 md:p-6">
-      <div className="flex items-center gap-1">
+      <div className="flex flex-wrap items-center gap-1">
         <span className="chip me-auto text-brand">{ref}</span>
-        <button className={`icon-btn size-9 ${saved ? 'text-gold' : ''}`} aria-label="Save" onClick={() => toggleSaved('hadith', key, `/hadith/${c}/${s}#h${h.hadithnumber}`)}>{saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}</button>
-        <button className="icon-btn size-9" aria-label="Copy" onClick={() => navigator.clipboard?.writeText(`${ar ? ar + '\n\n' : ''}${h.text}\n— ${ref}`)}><Copy size={17} /></button>
-        {ar && <button className="icon-btn size-9" aria-label="Share as image" onClick={() => shareAyahImage(ar.length > 500 ? ar.slice(0, 500) + '…' : ar, h.text.length > 400 ? h.text.slice(0, 400) + '…' : h.text, ref)}><Image size={17} /></button>}
+        <button className={`icon-btn size-10 ${saved ? 'text-gold' : ''}`} aria-label="Save" onClick={() => toggleSaved('hadith', key, `/hadith/${c}/${s}#h${h.hadithnumber}`)}>{saved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}</button>
+        <button className="icon-btn size-10" aria-label="Copy" onClick={() => navigator.clipboard?.writeText(`${ar ? ar + '\n\n' : ''}${h.text}\n— ${ref}`)}><Copy size={20} /></button>
+        {ar && <button className="icon-btn size-10" aria-label="Share as image" onClick={() => shareAyahImage(ar.length > 500 ? ar.slice(0, 500) + '…' : ar, h.text.length > 400 ? h.text.slice(0, 400) + '…' : h.text, ref)}><Image size={20} /></button>}
         <WhatsAppButton body={h.text.length > 1200 ? h.text.slice(0, 1200) + '…' : h.text} refText={ref} path={`/hadith/${c}/${s}#h${h.hadithnumber}`} />
         <ReportButton item={`Hadith: ${ref}`} />
       </div>

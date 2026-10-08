@@ -180,7 +180,7 @@ export default function Home() {
               <WhatsAppButton body={`${vodAyah[0]}
 
 ${vodAyah[1]}`} refText={`Quran ${vod.s}:${vod.a} (${data.surahs[vod.s - 1].tname})`} path={`/quran/${vod.s}#${vod.a}`} />
-              <button className="icon-btn" title="Share as image" onClick={() => shareAyahImage(vodAyah[0], vodAyah[1], `${data.surahs[vod.s - 1].tname} ${vod.s}:${vod.a}`)}><Share2 size={17} /></button>
+              <button className="icon-btn" title="Share as image" onClick={() => shareAyahImage(vodAyah[0], vodAyah[1], `${data.surahs[vod.s - 1].tname} ${vod.s}:${vod.a}`)}><Share2 size={20} /></button>
             </div>
             <p className="quran mt-4 text-3xl leading-[2.2] md:text-[34px]">{vodAyah[0]}</p>
             <p className="mt-3 text-[15px] leading-relaxed text-muted">{vodAyah[1]}</p>

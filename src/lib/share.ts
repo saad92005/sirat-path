@@ -6,14 +6,38 @@ export function shareMessage(body: string, ref: string, path = '/') {
   return `${body.trim()}\n— ${ref}\n\nRead more on Sirat Path (free, no ads): ${SITE}${path}`
 }
 
-/** Opens WhatsApp (app on phones, web on desktop) with the message pre-filled. */
-export function shareWhatsApp(body: string, ref: string, path = '/') {
-  window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage(body, ref, path))}`, '_blank', 'noopener')
+const isMobile = () => /android|iphone|ipad|ipod/i.test(navigator.userAgent)
+
+/**
+ * Phones: hand off straight to the WhatsApp app via its URL scheme. Opening wa.me in a new tab
+ * left an empty tab behind, which users saw as a white screen when they came back.
+ * Desktop: WhatsApp Web in a new tab.
+ */
+export function openWhatsApp(text: string) {
+  const q = encodeURIComponent(text)
+  if (!isMobile()) { window.open(`https://web.whatsapp.com/send?text=${q}`, '_blank', 'noopener'); return }
+  let left = false
+  const onHide = () => { if (document.hidden) left = true }
+  document.addEventListener('visibilitychange', onHide)
+  location.href = `whatsapp://send?text=${q}`
+  // WhatsApp not installed → the page never hid; fall back to the system share sheet / wa.me.
+  setTimeout(() => {
+    document.removeEventListener('visibilitychange', onHide)
+    if (!left && !document.hidden) location.href = `https://wa.me/?text=${q}`
+  }, 1800)
 }
 
-/** Shares the app itself — native share sheet when available, else WhatsApp. */
+export function shareWhatsApp(body: string, ref: string, path = '/') {
+  openWhatsApp(shareMessage(body, ref, path))
+}
+
+const APP_TEXT = 'Sirat Path — a free, ad-free Islamic companion: Quran, prayer times, adhan, Qibla, duas, hadith and more. Works offline.'
+
+/** Shares the app itself via WhatsApp. */
+export function shareAppWhatsApp() { openWhatsApp(`${APP_TEXT}\n${SITE}`) }
+
+/** Native share sheet (any app) when available, else WhatsApp. */
 export async function shareApp() {
-  const text = 'Sirat Path — a free, ad-free Islamic companion: Quran, prayer times, adhan, Qibla, duas, hadith and more. Works offline.'
-  if (navigator.share) { try { await navigator.share({ title: 'Sirat Path', text, url: SITE }); return } catch { return } }
-  window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${SITE}`)}`, '_blank', 'noopener')
+  if (navigator.share) { try { await navigator.share({ title: 'Sirat Path', text: APP_TEXT, url: SITE }) } catch { /* cancelled */ } return }
+  shareAppWhatsApp()
 }

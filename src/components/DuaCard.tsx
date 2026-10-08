@@ -37,12 +37,12 @@ export default function DuaCard({ d, counter, count = 0, onCount }: { d: Dua; co
           <span className={`chip mt-1 ${isQuran ? 'text-brand' : 'text-gold'}`}>{isQuran ? d.ref : `Sunnah · ${d.ref}`}</span>
         </div>
         <div className="flex shrink-0 items-center gap-1">
-        {d.quran && <button className="icon-btn size-9" onClick={() => play(d.quran!.s, d.quran!.from)} aria-label="Play recitation"><Play size={17} /></button>}
-        <button className={`icon-btn size-9 ${saved ? 'text-gold' : ''}`} onClick={() => toggleSaved('dua', d.id, d.ref)} aria-label="Save">{saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}</button>
-        <button className="icon-btn size-9" aria-label="Copy" onClick={async () => { await navigator.clipboard?.writeText(`${ar}\n\n${en}\n— ${d.ref}`); setCopied(true); setTimeout(() => setCopied(false), 1500) }}>
-          {copied ? <Check size={17} className="text-brand" /> : <Copy size={17} />}
+        {d.quran && <button className="icon-btn size-10" onClick={() => play(d.quran!.s, d.quran!.from)} aria-label="Play recitation"><Play size={20} /></button>}
+        <button className={`icon-btn size-10 ${saved ? 'text-gold' : ''}`} onClick={() => toggleSaved('dua', d.id, d.ref)} aria-label="Save">{saved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}</button>
+        <button className="icon-btn size-10" aria-label="Copy" onClick={async () => { await navigator.clipboard?.writeText(`${ar}\n\n${en}\n— ${d.ref}`); setCopied(true); setTimeout(() => setCopied(false), 1500) }}>
+          {copied ? <Check size={20} className="text-brand" /> : <Copy size={20} />}
         </button>
-        <button className="icon-btn size-9" aria-label="Share as image" onClick={() => shareAyahImage(ar, en, d.ref)}><Image size={17} /></button>
+        <button className="icon-btn size-10" aria-label="Share as image" onClick={() => shareAyahImage(ar, en, d.ref)}><Image size={20} /></button>
         <WhatsAppButton body={`${ar}
 
 ${en}`} refText={d.ref} path={`${location.pathname}#${d.id}`} />

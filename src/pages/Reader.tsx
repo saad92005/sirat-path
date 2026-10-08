@@ -53,6 +53,10 @@ export default function Reader() {
   const sideRef = useRef<HTMLDivElement>(null)
 
   const surah = data?.surahs[n - 1]
+  const urduId = settings.urduId || 234
+  const transMode = settings.secondTranslation ? (settings.showTranslation ? 'both' : 'ur') : settings.showTranslation ? 'en' : 'off'
+  const setTransMode = (m: 'en' | 'ur' | 'both' | 'off') => setSettings({
+    showTranslation: m === 'en' || m === 'both', secondTranslation: m === 'ur' || m === 'both' ? urduId : 0 })
   usePageMeta(surah && `Surah ${surah.tname}${surah.ename !== surah.tname ? ` (${surah.ename})` : ""} — Quran ${n} with Translation & Audio`,
     surah && `Read Surah ${surah.tname} (${surah.name}, "${surah.ename}"), surah ${n} of the Quran, with Arabic text, translation, tajweed and audio recitation. Free.`)
   const mushaf = settings.readMode === 'mushaf'
@@ -180,16 +184,27 @@ export default function Reader() {
           </div>
           <button title="Memorisation mode — hide text, tap to reveal" className={`icon-btn ml-1 ${hifz ? 'bg-brand/10 text-brand' : ''}`} onClick={() => setHifz(!hifz)}><Brain size={18} /></button>
           <button title="Tajweed colours" className={`icon-btn ${settings.tajweed ? 'bg-brand/10 text-brand' : ''}`} onClick={() => setSettings({ tajweed: !settings.tajweed })}><Palette size={18} /></button>
-          <select aria-label="Second translation" className="ms-1 max-w-24 rounded-lg border border-line bg-surface px-2 py-1.5 text-xs sm:max-w-none" value={settings.secondTranslation} onChange={(e) => setSettings({ secondTranslation: +e.target.value })}>
-            <option value={0}>+ Urdu</option>
-            {STUDY_TRANSLATIONS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
-          </select>
-          <button title="Translation (T)" className={`icon-btn ${settings.showTranslation ? 'text-brand' : ''}`} onClick={() => setSettings({ showTranslation: !settings.showTranslation })}><Languages size={18} /></button>
+          <button title="Translation on/off (T)" className={`icon-btn ${settings.showTranslation || settings.secondTranslation ? 'text-brand' : ''}`} onClick={() => setTransMode(transMode === 'off' ? 'en' : 'off')}><Languages size={20} /></button>
           <div className="ml-auto flex items-center">
-            <button className="icon-btn" onClick={() => setSettings({ arabicSize: Math.max(20, fontPx - 2) })} aria-label="Smaller text"><Minus size={17} /></button>
+            <button className="icon-btn" onClick={() => setSettings({ arabicSize: Math.max(20, fontPx - 2) })} aria-label="Smaller text"><Minus size={20} /></button>
             <span className="w-7 text-center text-xs tabular-nums text-muted">{fontPx}</span>
-            <button className="icon-btn" onClick={() => setSettings({ arabicSize: Math.min(56, fontPx + 2) })} aria-label="Larger text"><Plus size={17} /></button>
+            <button className="icon-btn" onClick={() => setSettings({ arabicSize: Math.min(56, fontPx + 2) })} aria-label="Larger text"><Plus size={20} /></button>
           </div>
+        </div>
+
+        <div className="mt-2 flex flex-wrap items-center gap-2 rounded-2xl border border-line bg-surface p-2">
+          <span className="flex items-center gap-1.5 px-1 text-sm font-semibold"><Languages size={18} className="text-brand" />Translation</span>
+          <div className="flex flex-1 rounded-xl bg-surface-2 p-1 sm:flex-none" role="radiogroup" aria-label="Translation language">
+            {([['en', 'English'], ['ur', 'اردو'], ['both', 'Both'], ['off', 'Off']] as const).map(([k, l]) => (
+              <button key={k} role="radio" aria-checked={transMode === k} onClick={() => setTransMode(k)}
+                className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${k === 'ur' ? 'urdu' : ''} ${transMode === k ? 'bg-brand text-brand-ink shadow-sm' : 'text-muted hover:text-ink'}`}>{l}</button>
+            ))}
+          </div>
+          {(transMode === 'ur' || transMode === 'both') && (
+            <select aria-label="Urdu translator" className="w-full rounded-lg border border-line bg-bg px-2 py-2 text-sm sm:w-auto" value={urduId} onChange={(e) => setSettings({ urduId: +e.target.value, secondTranslation: +e.target.value })}>
+              {STUDY_TRANSLATIONS.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          )}
         </div>
 
         {extraErr && <p className="mt-2 rounded-xl bg-gold/10 px-4 py-2 text-sm text-gold">{extraErr}</p>}
@@ -228,24 +243,22 @@ export default function Reader() {
                 <article key={a} id={`a${a}`} data-a={a} className={`group scroll-mt-32 py-6 transition-colors md:py-8 ${active ? '-mx-4 rounded-2xl bg-brand/8 px-4' : ''}`}>
                   <div className="mb-3 flex flex-wrap items-center gap-0.5 text-muted">
                     <span className="chip mr-auto">{n}:{a}{done && <Check size={12} className="text-brand" />}</span>
-                    <button className={`icon-btn size-9 ${active ? 'text-brand' : ''}`} onClick={() => (active ? toggle() : play(n, a))} aria-label="Play ayah">
-                      {active && audio?.playing ? <Pause size={17} /> : <Play size={17} />}
+                    <button className={`icon-btn size-10 ${active ? 'text-brand' : ''}`} onClick={() => (active ? toggle() : play(n, a))} aria-label="Play ayah">
+                      {active && audio?.playing ? <Pause size={20} /> : <Play size={20} />}
                     </button>
-                    <button className={`icon-btn size-9 ${marked ? 'text-gold' : ''}`} onClick={() => { toggleBookmark(n, a); toast(marked ? 'Bookmark removed' : 'Bookmarked') }} aria-label="Bookmark">
-                      {marked ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}
+                    <button className={`icon-btn size-10 ${marked ? 'text-gold' : ''}`} onClick={() => { toggleBookmark(n, a); toast(marked ? 'Bookmark removed' : 'Bookmarked') }} aria-label="Bookmark">
+                      {marked ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}
                     </button>
-                    <button className={`icon-btn size-9 ${note ? 'text-brand' : ''}`} onClick={() => setNoteFor(noteFor === a ? null : a)} aria-label="Note"><NotebookPen size={17} /></button>
-                    <button className="icon-btn size-9" aria-label="Copy" onClick={async () => {
+                    <button className={`icon-btn size-10 ${note ? 'text-brand' : ''}`} onClick={() => setNoteFor(noteFor === a ? null : a)} aria-label="Note"><NotebookPen size={20} /></button>
+                    <button className="icon-btn size-10" aria-label="Copy" onClick={async () => {
                       await navigator.clipboard?.writeText(`${ar}\n\n${en}\n— Quran ${n}:${a} (${surah.tname})`); toast('Copied')
-                    }}><Copy size={17} /></button>
-                    <button className="icon-btn size-9" aria-label="Share as image" title="Share as image" onClick={async () => {
+                    }}><Copy size={20} /></button>
+                    <button className="icon-btn size-10" aria-label="Share as image" title="Share as image" onClick={async () => {
                       toast('Creating image…'); toast((await shareAyahImage(ar, en, ref)) === 'shared' ? 'Shared' : 'Image saved')
-                    }}><Image size={17} /></button>
-                    <WhatsAppButton body={`${ar}
-
-${en}`} refText={`Quran ${n}:${a} (${surah.tname})`} path={`/quran/${n}#${a}`} />
-                    <button className="icon-btn size-9" aria-label="Study: word by word and tafsir" title="Word by word & tafsir" onClick={() => setStudy(a)}><BookOpenText size={17} /></button>
-                    {plan && <button className="icon-btn size-9" title="Mark Khatm progress up to here" aria-label="Mark read up to here" onClick={() => markRead(a)}><Target size={17} /></button>}
+                    }}><Image size={20} /></button>
+                    <WhatsAppButton body={[ar, settings.showTranslation && en, second?.get(a)].filter(Boolean).join('\n\n')} refText={`Quran ${n}:${a} (${surah.tname})`} path={`/quran/${n}#${a}`} />
+                    <button className="icon-btn size-10" aria-label="Study: word by word and tafsir" title="Word by word & tafsir" onClick={() => setStudy(a)}><BookOpenText size={20} /></button>
+                    {plan && <button className="icon-btn size-10" title="Mark Khatm progress up to here" aria-label="Mark read up to here" onClick={() => markRead(a)}><Target size={20} /></button>}
                   </div>
                   <p onClick={() => hidden(a) && reveal(a)} className={`quran text-right transition ${hidden(a) ? 'cursor-pointer select-none blur-md' : ''}`} style={{ fontSize: fontPx }}>
                     {taj?.get(a) ? taj.get(a)!.map((g, k) => <span key={k} style={g.rule ? { color: TAJWEED_RULES[g.rule]?.color } : undefined}>{g.t}</span>) : ar} <span className="ayah-num">{a}</span>
