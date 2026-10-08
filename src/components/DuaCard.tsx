@@ -36,7 +36,7 @@ export default function DuaCard({ d, counter, count = 0, onCount }: { d: Dua; co
           <p className="font-semibold">{d.title}</p>
           <span className={`chip mt-1 ${isQuran ? 'text-brand' : 'text-gold'}`}>{isQuran ? d.ref : `Sunnah · ${d.ref}`}</span>
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <div className="flex max-w-full flex-wrap items-center gap-1">
         {d.quran && <button className="icon-btn size-10" onClick={() => play(d.quran!.s, d.quran!.from)} aria-label="Play recitation"><Play size={20} /></button>}
         <button className={`icon-btn size-10 ${saved ? 'text-gold' : ''}`} onClick={() => toggleSaved('dua', d.id, d.ref)} aria-label="Save">{saved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}</button>
         <button className="icon-btn size-10" aria-label="Copy" onClick={async () => { await navigator.clipboard?.writeText(`${ar}\n\n${en}\n— ${d.ref}`); setCopied(true); setTimeout(() => setCopied(false), 1500) }}>
