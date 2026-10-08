@@ -110,7 +110,7 @@ export default function QiblaPage() {
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
         <div className="space-y-5">
           {/* Compass dial */}
-          <div className="relative mx-auto aspect-square w-full max-w-80">
+          <div className="relative mx-auto aspect-square w-full max-w-80 overflow-hidden rounded-full">
             <div className={`absolute inset-0 rounded-full border-[6px] bg-surface shadow-inner transition-colors ${aligned ? 'border-brand' : 'border-surface-2'}`} />
             <div className="absolute inset-0 will-change-transform" style={{ transform: `rotate(${heading != null ? -heading : 0}deg)` }}>
               {ticks.map((d) => (
@@ -120,7 +120,7 @@ export default function QiblaPage() {
               ))}
               {['N', 'E', 'S', 'W'].map((d, i) => (
                 <span key={d} className={`absolute left-1/2 top-1/2 text-sm font-bold ${d === 'N' ? 'text-red-500' : 'text-muted'}`}
-                  style={{ transform: `translate(-50%,-50%) rotate(${i * 90}deg) translateY(-112px) rotate(${-i * 90}deg)` }}>{d}</span>
+                  style={{ transform: `translate(-50%,-50%) rotate(${i * 90}deg) translateY(calc(-1 * min(112px, 34vw))) rotate(${-i * 90}deg)` }}>{d}</span>
               ))}
             </div>
             {/* fixed top marker = the direction the phone is pointing */}

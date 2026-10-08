@@ -89,7 +89,7 @@ export default function Prayer() {
           <span className="text-muted">Asr</span>
           <div className="mt-1 grid grid-cols-2 gap-2">
             {(['Shafi', 'Hanafi'] as const).map((m) => (
-              <button key={m} onClick={() => setSettings({ madhab: m })} className={m === s.madhab ? 'btn' : 'btn-ghost'}>
+              <button key={m} onClick={() => setSettings({ madhab: m })} className={`${m === s.madhab ? 'btn' : 'btn-ghost'} h-auto min-h-10 whitespace-normal text-center text-sm leading-tight`}>
                 {m === 'Shafi' ? 'Standard (Shafi, Maliki, Hanbali)' : 'Hanafi'}
               </button>
             ))}
@@ -108,8 +108,8 @@ export default function Prayer() {
         </details>
       </section>
 
-      <section className="card flex items-start gap-4 p-5 lg:self-start">
-        <div className="flex-1">
+      <section className="card flex flex-col gap-3 p-5 sm:flex-row sm:items-start sm:gap-4 lg:self-start">
+        <div className="min-w-0 flex-1">
           <p className="font-semibold">Prayer reminders</p>
           <p className="mt-1 text-sm text-muted">
             {perm === 'unsupported'
@@ -117,27 +117,30 @@ export default function Prayer() {
               : 'Uses your browser’s notifications. Reminders fire while Sirat Path is open or running in the background; browsers may not deliver them after the app is fully closed.'}
           </p>
           {perm === 'denied' && <p className="mt-1 text-sm text-red-500">Notifications are blocked in browser settings.</p>}
+          {!s.location && <p className="mt-1 text-sm text-gold">Set your location first to turn reminders on.</p>}
         </div>
-        <button className={s.notify ? 'btn' : 'btn-ghost'} onClick={toggleNotify} disabled={perm === 'unsupported' || perm === 'denied' || !s.location}>
-          {s.notify ? <Bell size={16} /> : <BellOff size={16} />}{s.notify ? 'On' : 'Off'}
+        <button className={`${s.notify ? 'btn' : 'btn-ghost'} w-full shrink-0 sm:w-auto`} onClick={toggleNotify} disabled={perm === 'unsupported' || perm === 'denied' || !s.location}>
+          {s.notify ? <Bell size={16} /> : <BellOff size={16} />}Reminders {s.notify ? 'on' : 'off'}
         </button>
       </section>
-        <section className="card space-y-3 p-5 lg:col-span-2">
-          <div className="flex flex-wrap items-center gap-3">
+        <section className="card space-y-4 p-5 lg:col-span-2">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
             <div className="min-w-0 flex-1">
               <p className="font-semibold">Adhan sound</p>
-              <p className="text-sm text-muted">Play the adhan when a reminder fires (while the app is open). <span className="text-xs">{ADHAN_CREDIT}.</span></p>
+              <p className="text-sm text-muted">Play the adhan when a reminder fires (while the app is open). <span className="break-words text-xs">{ADHAN_CREDIT}.</span></p>
             </div>
-            <button className="btn-ghost" onClick={() => playAdhan().catch(() => alert('Could not play — check your connection.'))}><Volume2 size={16} />Preview</button>
-            <button className="btn-ghost" onClick={stopAdhan}><Square size={14} />Stop</button>
-            <button className={s.adhan ? 'btn' : 'btn-ghost'} onClick={() => setSettings({ adhan: !s.adhan })}>{s.adhan ? 'On' : 'Off'}</button>
+            <div className="grid shrink-0 grid-cols-3 gap-2">
+              <button className="btn-ghost justify-center px-3" onClick={() => playAdhan().catch(() => alert('Could not play — check your connection.'))}><Volume2 size={16} />Preview</button>
+              <button className="btn-ghost justify-center px-3" onClick={stopAdhan}><Square size={14} />Stop</button>
+              <button className={`${s.adhan ? 'btn' : 'btn-ghost'} justify-center px-3`} onClick={() => setSettings({ adhan: !s.adhan })}>{s.adhan ? 'On' : 'Off'}</button>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-3 border-t border-line pt-3">
+          <div className="flex flex-col gap-3 border-t border-line pt-4 sm:flex-row sm:items-center sm:gap-4">
             <div className="min-w-0 flex-1">
               <p className="font-semibold">Reminders even when the app is closed</p>
               <p className="text-sm text-muted">Add the next 30 days of prayer times to your phone’s calendar. Your calendar app raises the alarm — no internet or server needed. Re-export monthly or after changing location.</p>
             </div>
-            <button className="btn" disabled={!s.location} onClick={() => downloadIcs(s, 30, 0)}><CalendarPlus size={16} />Add to calendar</button>
+            <button className="btn w-full shrink-0 justify-center sm:w-auto" disabled={!s.location} onClick={() => downloadIcs(s, 30, 0)}><CalendarPlus size={16} />Add to calendar</button>
           </div>
         </section>
       </div>

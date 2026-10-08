@@ -30,11 +30,12 @@ export default function DuaCard({ d, counter, count = 0, onCount }: { d: Dua; co
 
   return (
     <article id={d.id} className={`card scroll-mt-24 p-5 transition md:p-6 ${complete ? 'border-brand/50 bg-brand/5' : ''}`}>
-      <div className="flex items-start gap-2">
-        <div className="min-w-0 flex-1">
+      <div className="flex flex-wrap items-start gap-2">
+        <div className="min-w-[min(100%,14rem)] flex-1">
           <p className="font-semibold">{d.title}</p>
           <span className={`chip mt-1 ${isQuran ? 'text-brand' : 'text-gold'}`}>{isQuran ? d.ref : `Sunnah · ${d.ref}`}</span>
         </div>
+        <div className="flex shrink-0 items-center gap-1">
         {d.quran && <button className="icon-btn size-9" onClick={() => play(d.quran!.s, d.quran!.from)} aria-label="Play recitation"><Play size={17} /></button>}
         <button className={`icon-btn size-9 ${saved ? 'text-gold' : ''}`} onClick={() => toggleSaved('dua', d.id, d.ref)} aria-label="Save">{saved ? <BookmarkCheck size={17} /> : <Bookmark size={17} />}</button>
         <button className="icon-btn size-9" aria-label="Copy" onClick={async () => { await navigator.clipboard?.writeText(`${ar}\n\n${en}\n— ${d.ref}`); setCopied(true); setTimeout(() => setCopied(false), 1500) }}>
@@ -42,6 +43,7 @@ export default function DuaCard({ d, counter, count = 0, onCount }: { d: Dua; co
         </button>
         <button className="icon-btn size-9" aria-label="Share as image" onClick={() => shareAyahImage(ar, en, d.ref)}><Image size={17} /></button>
         <ReportButton item={`Dua: ${d.title} (${d.ref})`} />
+        </div>
       </div>
       <p className="quran mt-4 text-right text-[26px] md:text-[28px]">{ar}</p>
       {d.tr && <p className="mt-3 text-sm italic text-gold">{d.tr}</p>}

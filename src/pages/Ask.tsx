@@ -84,7 +84,7 @@ export default function Ask() {
 
       {/* AI mode */}
       <section className="card mt-4 space-y-3 p-4 text-sm">
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-2 xl:grid-cols-3">
           {([
             ['cloud', Cloud, 'Cloud AI', 'Fast answers · free', false],
             ['local', Cpu, 'On-device', gpu === false ? 'Not supported here' : 'Private · offline', gpu === false],
@@ -97,7 +97,7 @@ export default function Ask() {
                 <span className={`grid size-10 shrink-0 place-items-center rounded-xl ${on ? 'bg-brand text-brand-ink' : 'bg-surface-2 text-muted'}`}><Icon size={19} /></span>
                 <span className="min-w-0 flex-1">
                   <span className={`block text-sm font-semibold ${on ? 'text-brand' : ''}`}>{label}</span>
-                  <span className="block truncate text-xs text-muted">{sub}</span>
+                  <span className="block text-xs leading-snug text-muted">{sub}</span>
                 </span>
                 <span className={`grid size-5 shrink-0 place-items-center rounded-full border-2 ${on ? 'border-brand' : 'border-line'}`}>{on && <span className="size-2.5 rounded-full bg-brand" />}</span>
               </button>

@@ -21,13 +21,55 @@ export async function sb() {
     const { createClient } = await import('@supabase/supabase-js')
     client = createClient(URL_!, KEY!, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } })
     session = (await client.auth.getSession()).data.session
-    client.auth.onAuthStateChange((_e, s) => { session = s; emit() })
+    client.auth.onAuthStateChange((e, s) => {
+      session = s; emit()
+      if (s && (e === 'SIGNED_IN' || e === 'INITIAL_SESSION')) scheduleSync(300)
+    })
     emit()
+    if (session) scheduleSync(300)
   }
   return client
 }
 
 if (cloudConfigured) sb().catch(() => { /* offline — retry on demand */ })
+
+/** Is Google sign-in switched on in the Supabase project? (null = couldn't check, e.g. offline) */
+export async function googleEnabled(): Promise<boolean | null> {
+  try {
+    const r = await fetch(`${URL_}/auth/v1/settings`, { headers: { apikey: KEY! } })
+    if (!r.ok) return null
+    return Boolean((await r.json())?.external?.google)
+  } catch { return null }
+}
+
+// ---------- Automatic sync ----------
+// Signed-in users sync on sign-in, app start, focus, reconnect, every few minutes and shortly after local edits.
+let timer: ReturnType<typeof setTimeout> | undefined
+let pending = false
+export function scheduleSync(delay = 4000) {
+  if (!cloudConfigured || !session) return
+  clearTimeout(timer)
+  timer = setTimeout(async () => {
+    if (!session || !navigator.onLine) return
+    if (status.syncing) { pending = true; return }
+    try { await syncNow() } catch { /* error shown on Account page */ }
+    if (pending) { pending = false; scheduleSync(1000) }
+  }, delay)
+}
+if (cloudConfigured && typeof window !== 'undefined') {
+  window.addEventListener('online', () => scheduleSync(1000))
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') scheduleSync(500) })
+  setInterval(() => scheduleSync(0), 5 * 60_000)
+  // Any local write to a synced table → push soon (ignore writes made by sync itself).
+  queueMicrotask(() => {
+    for (const c of COLLECTIONS) {
+      const t = db.table(c)
+      const kick = () => { if (!applying) scheduleSync() }
+      t.hook('creating', kick); t.hook('updating', kick); t.hook('deleting', kick)
+    }
+  })
+}
+let applying = false
 
 export function useCloud() {
   const s = useSyncExternalStore((l) => { listeners.add(l); return () => listeners.delete(l) }, () => session)
@@ -74,6 +116,7 @@ export async function syncNow() {
   const c = await sb()
   if (!session) throw new Error('Sign in to sync')
   status = { ...status, syncing: true, error: null }; emit()
+  applying = true
   try {
     const hashes: Record<string, string> = JSON.parse(localStorage.getItem(HASH_KEY) ?? '{}')
     const since = new Date(status.lastSync ?? 0).toISOString()
@@ -122,9 +165,11 @@ export async function syncNow() {
 
     localStorage.setItem(HASH_KEY, JSON.stringify(hashes))
     localStorage.setItem('sirat-last-sync', String(startedAt))
+    applying = false
     status = { syncing: false, lastSync: startedAt, error: null }; emit()
     return { pulled: remote?.length ?? 0, pushed: upserts.length }
   } catch (e) {
+    applying = false
     status = { ...status, syncing: false, error: (e as Error).message }; emit()
     throw e
   }
