@@ -10,6 +10,8 @@ import { setSettings, useSettings } from '../lib/settings'
 import { db, logRead, saveNote, toggleBookmark, today } from '../lib/db'
 import { downloadSurah, isSurahDownloaded, play, skip, toggle, useAudio } from '../lib/audio'
 import { shareAyahImage } from '../lib/shareImage'
+import WhatsAppButton from '../components/WhatsAppButton'
+import { usePageMeta } from '../lib/seo'
 import Loading from '../components/Loading'
 import { Sheet } from '../components/ui'
 import { chapterTajweed, chapterTranslation, STUDY_TRANSLATIONS, TAFSIRS, TAJWEED_RULES, tafsir as fetchTafsir, wordByWord, type TajSeg, type Word } from '../lib/qurancom'
@@ -51,6 +53,8 @@ export default function Reader() {
   const sideRef = useRef<HTMLDivElement>(null)
 
   const surah = data?.surahs[n - 1]
+  usePageMeta(surah && `Surah ${surah.tname}${surah.ename !== surah.tname ? ` (${surah.ename})` : ""} — Quran ${n} with Translation & Audio`,
+    surah && `Read Surah ${surah.tname} (${surah.name}, "${surah.ename}"), surah ${n} of the Quran, with Arabic text, translation, tajweed and audio recitation. Free.`)
   const mushaf = settings.readMode === 'mushaf'
 
   const toast = (m: string) => { setFlash(m); setTimeout(() => setFlash(null), 1800) }
@@ -237,6 +241,9 @@ export default function Reader() {
                     <button className="icon-btn size-9" aria-label="Share as image" title="Share as image" onClick={async () => {
                       toast('Creating image…'); toast((await shareAyahImage(ar, en, ref)) === 'shared' ? 'Shared' : 'Image saved')
                     }}><Image size={17} /></button>
+                    <WhatsAppButton body={`${ar}
+
+${en}`} refText={`Quran ${n}:${a} (${surah.tname})`} path={`/quran/${n}#${a}`} />
                     <button className="icon-btn size-9" aria-label="Study: word by word and tafsir" title="Word by word & tafsir" onClick={() => setStudy(a)}><BookOpenText size={17} /></button>
                     {plan && <button className="icon-btn size-9" title="Mark Khatm progress up to here" aria-label="Mark read up to here" onClick={() => markRead(a)}><Target size={17} /></button>}
                   </div>

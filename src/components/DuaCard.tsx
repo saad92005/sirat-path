@@ -8,6 +8,7 @@ import { play } from '../lib/audio'
 import { db, toggleSaved } from '../lib/db'
 import { shareAyahImage } from '../lib/shareImage'
 import { useT } from '../lib/i18n'
+import WhatsAppButton from './WhatsAppButton'
 import ReportButton from './ReportButton'
 
 export function duaText(d: Dua, q: ReturnType<typeof useQuran>['data']) {
@@ -42,6 +43,9 @@ export default function DuaCard({ d, counter, count = 0, onCount }: { d: Dua; co
           {copied ? <Check size={17} className="text-brand" /> : <Copy size={17} />}
         </button>
         <button className="icon-btn size-9" aria-label="Share as image" onClick={() => shareAyahImage(ar, en, d.ref)}><Image size={17} /></button>
+        <WhatsAppButton body={`${ar}
+
+${en}`} refText={d.ref} path={`${location.pathname}#${d.id}`} />
         <ReportButton item={`Dua: ${d.title} (${d.ref})`} />
         </div>
       </div>

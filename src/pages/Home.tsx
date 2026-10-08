@@ -13,7 +13,9 @@ import { hijriParts, upcomingEvents } from '../lib/hijri'
 import { NAMES } from '../lib/names'
 import { streakOf } from '../lib/stats'
 import { shareAyahImage } from '../lib/shareImage'
+import WhatsAppButton from '../components/WhatsAppButton'
 import Skyline from '../components/Skyline'
+import InstallBanner from '../components/InstallBanner'
 import { useT, type StrKey } from '../lib/i18n'
 import { FeatureIcon, Ring } from '../components/ui'
 
@@ -76,6 +78,8 @@ export default function Home() {
         </div>
         <span className="quran hidden text-3xl text-gold md:block">السَّلَامُ عَلَيْكُمْ</span>
       </div>
+
+      <InstallBanner />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.6fr_1fr]">
         {/* Prayer hero with skyline */}
@@ -173,6 +177,9 @@ export default function Home() {
           <section className="card p-6 md:p-8">
             <div className="flex items-center">
               <p className="flex flex-1 items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold"><Sparkles size={14} />{t('dailyReflection')}</p>
+              <WhatsAppButton body={`${vodAyah[0]}
+
+${vodAyah[1]}`} refText={`Quran ${vod.s}:${vod.a} (${data.surahs[vod.s - 1].tname})`} path={`/quran/${vod.s}#${vod.a}`} />
               <button className="icon-btn" title="Share as image" onClick={() => shareAyahImage(vodAyah[0], vodAyah[1], `${data.surahs[vod.s - 1].tname} ${vod.s}:${vod.a}`)}><Share2 size={17} /></button>
             </div>
             <p className="quran mt-4 text-3xl leading-[2.2] md:text-[34px]">{vodAyah[0]}</p>

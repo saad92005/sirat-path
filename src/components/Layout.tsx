@@ -11,6 +11,7 @@ const CommandPalette = lazy(() => import('./CommandPalette'))
 import { setSettings, useSettings } from '../lib/settings'
 import { fmtTime, nextPrayer, PRAYER_LABEL } from '../lib/prayer'
 import { useInstall } from '../lib/install'
+import { useRouteMeta } from '../lib/seo'
 import { useOnline } from '../lib/online'
 import { useT, type StrKey } from '../lib/i18n'
 
@@ -76,6 +77,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const install = useInstall()
   const online = useOnline()
   const { pathname } = useLocation()
+  useRouteMeta(pathname)
   const dark = settings.theme === 'dark' || (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
   useEffect(() => {

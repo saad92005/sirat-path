@@ -31,9 +31,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,webp,woff2,json}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // The optional on-device AI runtime (~6 MB) is cached on first use instead of precached.
-        globIgnores: ['**/ai-worker-*.js', '**/lib-*.js'],
+        globIgnores: ['**/ai-worker-*.js', '**/lib-*.js', '**/og-image.png'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//],
+        navigateFallbackDenylist: [/^\/api\//, /^\/_vercel\//, /\.(xml|txt)$/],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
