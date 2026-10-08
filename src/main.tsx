@@ -5,6 +5,7 @@ import './index.css'
 import App from './App'
 import { registerSW } from 'virtual:pwa-register'
 import { requestPersistence } from './lib/offline'
+import { Analytics } from '@vercel/analytics/react'
 
 // Ask the browser to keep offline data (Quran audio, hadith, settings) from being evicted — matters most on iOS.
 requestPersistence()
@@ -28,6 +29,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <App />
+      <Analytics />
     </BrowserRouter>
   </StrictMode>,
 )
