@@ -10,7 +10,7 @@ import { useSettings } from '../lib/settings'
 import { computeTimes, fmtCountdown, fmtTime, hijri, nextPrayer, PRAYERS } from '../lib/prayer'
 import { db, today } from '../lib/db'
 import { hijriParts, upcomingEvents } from '../lib/hijri'
-import { NAMES } from '../lib/names'
+import { nameForDisplay } from '../lib/names'
 import { streakOf } from '../lib/stats'
 import { shareAyahImage } from '../lib/shareImage'
 import WhatsAppButton from '../components/WhatsAppButton'
@@ -60,7 +60,7 @@ export default function Home() {
   const dayNum = Math.floor((now.getTime() - now.getTimezoneOffset() * 60000) / 86_400_000)
   const vod = data ? fromAbs(data, (dayNum * 2654435761) % TOTAL_AYAHS) : null
   const vodAyah = data && vod ? data.surahs[vod.s - 1].ayahs[vod.a - 1] : null
-  const name = NAMES[dayNum % 99]
+  const name = nameForDisplay(dayNum % 99)
   const todayCount = reads.find((r) => r.day === day)?.count ?? 0
   const goalPct = Math.min(1, todayCount / s.dailyAyahGoal)
   const streak = streakOf(reads)

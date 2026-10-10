@@ -24,7 +24,7 @@ export const NAMES: [string, string, string][] = [
   ['الْجَلِيل', 'Al-Jalil', 'The Majestic'], ['الْكَرِيم', 'Al-Karim', 'The Most Generous'],
   ['الرَّقِيب', 'Ar-Raqib', 'The Watchful'], ['الْمُجِيب', 'Al-Mujib', 'The Responsive'],
   ['الْوَاسِع', "Al-Wasi'", 'The All-Encompassing'], ['الْحَكِيم', 'Al-Hakim', 'The All-Wise'],
-  ['الْوَدُود', 'Al-Wadud', 'The Most Loving'], ['الْمَجِيد', 'Al-Majid', 'The Most Glorious'],
+  ['الْوَدُود', 'Al-Wadud', 'The Most Loving'], ['الْمَجِيد', 'Al-Majīd', 'The Most Glorious'],
   ['الْبَاعِث', "Al-Ba'ith", 'The Resurrector'], ['الشَّهِيد', 'Ash-Shahid', 'The Witness'],
   ['الْحَقّ', 'Al-Haqq', 'The Truth'], ['الْوَكِيل', 'Al-Wakil', 'The Trustee'],
   ['الْقَوِيّ', 'Al-Qawiyy', 'The All-Strong'], ['الْمَتِين', 'Al-Matin', 'The Firm'],
@@ -33,7 +33,7 @@ export const NAMES: [string, string, string][] = [
   ['الْمُعِيد', "Al-Mu'id", 'The Restorer'], ['الْمُحْيِي', 'Al-Muhyi', 'The Giver of Life'],
   ['الْمُمِيت', 'Al-Mumit', 'The Bringer of Death'], ['الْحَيّ', 'Al-Hayy', 'The Ever-Living'],
   ['الْقَيُّوم', 'Al-Qayyum', 'The Self-Subsisting'], ['الْوَاجِد', 'Al-Wajid', 'The Finder'],
-  ['الْمَاجِد', 'Al-Majid', 'The Noble'], ['الْوَاحِد', 'Al-Wahid', 'The One'],
+  ['الْمَاجِد', 'Al-Mājid', 'The Noble'], ['الْوَاحِد', 'Al-Wahid', 'The One'],
   ['الْأَحَد', 'Al-Ahad', 'The Unique'], ['الصَّمَد', 'As-Samad', 'The Eternal Refuge'],
   ['الْقَادِر', 'Al-Qadir', 'The Able'], ['الْمُقْتَدِر', 'Al-Muqtadir', 'The All-Powerful'],
   ['الْمُقَدِّم', 'Al-Muqaddim', 'The Expediter'], ['الْمُؤَخِّر', "Al-Mu'akhkhir", 'The Delayer'],
@@ -52,3 +52,15 @@ export const NAMES: [string, string, string][] = [
   ['الْوَارِث', 'Al-Warith', 'The Inheritor'], ['الرَّشِيد', 'Ar-Rashid', 'The Guide to the Right Path'],
   ['الصَّبُور', 'As-Sabur', 'The Most Patient'],
 ]
+
+// Names that scholars teach should be mentioned together, never one alone (0-based indexes).
+const PAIRS: [number, number][] = [[19, 20], [21, 22], [23, 24], [70, 71], [90, 91]]
+export const pairOf = (i: number): number | undefined => PAIRS.find((p) => p.includes(i))?.find((j) => j !== i)
+
+/** A name for display on its own: paired names are shown together with their counterpart. */
+export function nameForDisplay(i: number): [string, string, string] {
+  const j = pairOf(i)
+  if (j === undefined) return NAMES[i]
+  const [a, b] = i < j ? [NAMES[i], NAMES[j]] : [NAMES[j], NAMES[i]]
+  return [`${a[0]} ${b[0]}`, `${a[1]} · ${b[1]}`, `${a[2]}, ${b[2]}`]
+}

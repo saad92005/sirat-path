@@ -29,7 +29,7 @@ export const DUA_CATEGORIES: { id: string; label: string; icon: string }[] = [
   { id: 'anxiety', label: 'Anxiety & Distress', icon: '💚' },
   { id: 'forgiveness', label: 'Forgiveness', icon: '✨' },
   { id: 'knowledge', label: 'Knowledge & Study', icon: '📖' },
-  { id: 'family', label: 'Parents & Family', icon: '👨‍👩‍👧' },
+  { id: 'family', label: 'Parents & Family', icon: '🏡' },
   { id: 'ramadan', label: 'Ramadan', icon: '🌙' },
   { id: 'hajj', label: 'Hajj & Umrah', icon: '🕋' },
   { id: 'quranic', label: 'Rabbana (Quranic)', icon: '📜' },

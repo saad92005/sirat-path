@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Grid3x3, Layers, RotateCw, Search, Shuffle } from 'lucide-react'
-import { NAMES } from '../lib/names'
+import { NAMES, pairOf } from '../lib/names'
 
 export default function Names() {
   const [mode, setMode] = useState<'grid' | 'learn'>('grid')
@@ -74,6 +74,7 @@ function Flashcards() {
             <div>
               <p className="text-3xl font-bold">{tr}</p>
               <p className="mt-2 text-lg text-muted">{en}</p>
+              {pairOf(order[pos]) !== undefined && <p className="mt-3 text-xs text-muted">Mentioned together with {NAMES[pairOf(order[pos])!][1]}</p>}
             </div>
           </div>
         </div>

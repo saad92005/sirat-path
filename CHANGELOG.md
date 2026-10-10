@@ -6,6 +6,9 @@ Notable changes to Sirat Path. Dates are deployment dates; each push to `main` d
 ### Added
 - **Urdu hadith translations** with an English / اردو / Both switch for Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasaʾi, Ibn Majah and Muwatta. Included in offline downloads.
 - Project documentation: PRD, SRS, design, data model, deployment, privacy policy, terms of use, security policy, test plan, project report, `CLAUDE.md`, license.
+### Changed
+- Content review: the Duas icon is now raised open palms (🤲) instead of folded "praying hands"; the Kids icon and the family emoji no longer show faces of people.
+- 99 Names: paired names (e.g. Ad-Ḍārr with An-Nāfiʿ, Al-Muʿizz with Al-Mudhill) are shown together on the Home card, and flashcards note the pairing. Al-Majīd and Al-Mājid are now spelled distinctly.
 ### Fixed
 - **Sunan an-Nasaʾi and Ibn Majah failed to load**, because jsDelivr returned 403 for that package. Hadith now fall back to the GitHub mirror.
 
