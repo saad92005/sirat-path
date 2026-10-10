@@ -25,6 +25,8 @@ export type Settings = {
   secondTranslation: number
   /** Preferred Urdu translator (quran.com id), remembered while Urdu is switched off. */
   urduId: number
+  /** Hadith translation shown under the Arabic. */
+  hadithLang: 'en' | 'ur' | 'both'
   tajweed: boolean
   adhan: boolean
 }
@@ -34,7 +36,7 @@ const DEFAULTS: Settings = {
   method: 'MuslimWorldLeague', madhab: 'Shafi', location: null, hijriOffset: 0,
   adjustments: {}, lastRead: null, notify: false,
   readMode: 'verse', playbackRate: 1, repeat: 1, sidebarSurahs: true,
-  accent: 'emerald', lang: 'en', name: '', dailyAyahGoal: 20, sound: false, onboarded: false, secondTranslation: 0, urduId: 234, tajweed: false, adhan: false,
+  accent: 'emerald', lang: 'en', name: '', dailyAyahGoal: 20, sound: false, onboarded: false, secondTranslation: 0, urduId: 234, hadithLang: 'en', tajweed: false, adhan: false,
 }
 
 const KEY = 'sirat-settings'

@@ -4,8 +4,8 @@ import { useSyncExternalStore } from 'react'
 import { chapterTranslation } from './qurancom'
 import { downloadSurah } from './audio'
 import { ensureQuran } from './quran'
+import { hadithFetch, URDU_COLLECTIONS } from './hadithApi'
 
-const HADITH_API = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1'
 const KEY = 'sirat-offline'
 
 type Packs = Record<string, number> // pack id → timestamp downloaded
@@ -34,13 +34,12 @@ async function pool(tasks: (() => Promise<unknown>)[], onProgress: Progress, lim
   await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, worker))
 }
 
-const getOk = async (url: string) => { const r = await fetch(url); if (!r.ok) throw new Error(`Download failed (${r.status})`); return r }
 
-/** All sections of a hadith collection, Arabic + English. */
+/** All sections of a hadith collection: Arabic, English and (where available) Urdu. */
 export async function downloadHadith(collection: string, onProgress: Progress) {
-  const info = await (await getOk(`${HADITH_API}/info.min.json`)).json() as Record<string, { metadata: { sections: Record<string, string> } }>
+  const info = await (await hadithFetch('info.min.json')).json() as Record<string, { metadata: { sections: Record<string, string> } }>
   const sections = Object.entries(info[collection]?.metadata.sections ?? {}).filter(([k, v]) => k !== '0' && v).map(([k]) => k)
-  const tasks = sections.flatMap((s) => ['eng', 'ara'].map((lang) => () => getOk(`${HADITH_API}/editions/${lang}-${collection}/sections/${s}.min.json`)))
+  const tasks = sections.flatMap((s) => ['eng', 'ara', ...(URDU_COLLECTIONS.has(collection) ? ['urd'] : [])].map((lang) => () => hadithFetch(`editions/${lang}-${collection}/sections/${s}.min.json`)))
   await pool(tasks, onProgress)
   mark(`hadith:${collection}`)
 }

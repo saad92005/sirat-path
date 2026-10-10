@@ -7,11 +7,12 @@ import { shareAyahImage } from '../lib/shareImage'
 import WhatsAppButton from '../components/WhatsAppButton'
 import { PageHeader } from '../components/ui'
 import ReportButton from '../components/ReportButton'
+import { hadithJson, URDU_COLLECTIONS } from '../lib/hadithApi'
+import { setSettings, useSettings } from '../lib/settings'
 
-// Hadith are fetched on demand from the open hadith-api project (jsDelivr CDN) and cached by the
-// service worker once viewed. Nothing is bundled with the app. Translations remain the work of
-// their respective translators/publishers; see DATA_SOURCES.md.
-const API = 'https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1'
+// Hadith are fetched on demand from the open hadith-api project and cached by the service worker
+// once viewed. Nothing is bundled with the app. Translations remain the work of their respective
+// translators/publishers; see DATA_SOURCES.md.
 
 export const COLLECTIONS = [
   { id: 'nawawi', name: 'Forty Hadith of an-Nawawi', short: 'Nawawi 40', color: '#0f766e', note: 'A foundational collection of 42 essential hadith' },
@@ -29,7 +30,7 @@ type H = { hadithnumber: number; arabicnumber: number; text: string; grades?: { 
 type Info = Record<string, { metadata: { name: string; sections: Record<string, string> } }>
 
 let infoCache: Promise<Info> | null = null
-const getInfo = () => (infoCache ??= fetch(`${API}/info.min.json`).then((r) => { if (!r.ok) throw new Error(); return r.json() }).catch((e) => { infoCache = null; throw e }))
+const getInfo = () => (infoCache ??= hadithJson<Info>('info.min.json').catch((e) => { infoCache = null; throw e }))
 
 export default function Hadith() {
   const { collection, section } = useParams()
@@ -64,16 +65,17 @@ function SavedHadith() {
   )
 }
 
-function useFetch<T>(url: string | null, fn?: () => Promise<T>) {
+function useFetch<T>(path: string | null, fn?: () => Promise<T>) {
   const [state, setState] = useState<{ data?: T; error?: boolean }>({})
   useEffect(() => {
     let live = true
     setState({})
-    ;(fn ? fn() : fetch(url!).then((r) => { if (!r.ok) throw new Error(); return r.json() }))
+    if (!path) return
+    ;(fn ? fn() : hadithJson<T>(path))
       .then((d) => live && setState({ data: d }))
       .catch(() => live && setState({ error: true }))
     return () => { live = false }
-  }, [url]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [path]) // eslint-disable-line react-hooks/exhaustive-deps
   return state
 }
 
@@ -108,11 +110,18 @@ function CollectionView({ c }: { c: string }) {
 
 function SectionView({ c, s }: { c: string; s: string }) {
   const meta = COLLECTIONS.find((x) => x.id === c)
-  const en = useFetch<{ metadata: { section: Record<string, string> }; hadiths: H[] }>(`${API}/editions/eng-${c}/sections/${s}.min.json`)
-  const ar = useFetch<{ hadiths: H[] }>(`${API}/editions/ara-${c}/sections/${s}.min.json`)
+  const settings = useSettings()
+  const hasUrdu = URDU_COLLECTIONS.has(c)
+  const lang = hasUrdu ? settings.hadithLang : 'en'
+  const en = useFetch<{ metadata: { section: Record<string, string> }; hadiths: H[] }>(`editions/eng-${c}/sections/${s}.min.json`)
+  const ar = useFetch<{ hadiths: H[] }>(`editions/ara-${c}/sections/${s}.min.json`)
+  const ur = useFetch<{ hadiths: H[] }>(lang !== 'en' ? `editions/urd-${c}/sections/${s}.min.json` : null)
   const [q, setQ] = useState('')
   const arMap = useMemo(() => new Map((ar.data?.hadiths ?? []).map((h) => [h.hadithnumber, h.text])), [ar.data])
-  const list = (en.data?.hadiths ?? []).filter((h) => h.text && (!q || h.text.toLowerCase().includes(q.toLowerCase())))
+  const urMap = useMemo(() => new Map((ur.data?.hadiths ?? []).filter((h) => h.text).map((h) => [h.hadithnumber, h.text])), [ur.data])
+  const list = (en.data?.hadiths ?? []).filter((h) => h.text && (!q || h.text.toLowerCase().includes(q.toLowerCase()) || urMap.get(h.hadithnumber)?.includes(q)))
+  // Urdu-only mode still shows English for any hadith the Urdu edition is missing.
+  const showEn = (n: number) => lang !== 'ur' || (!!ur.data && !urMap.has(n)) || !!ur.error
 
   return (
     <div>
@@ -121,30 +130,42 @@ function SectionView({ c, s }: { c: string; s: string }) {
       {en.error ? <Offline /> : !en.data ? <Skeleton /> : (
         <>
           <div className="relative mb-4"><Search className="absolute start-3.5 top-1/2 -translate-y-1/2 text-muted" size={18} /><input className="input ps-10" placeholder="Search in this book" value={q} onChange={(e) => setQ(e.target.value)} /></div>
+          {hasUrdu && (
+            <div role="radiogroup" aria-label="Translation language" className="mb-3 flex gap-1 rounded-xl bg-surface-2 p-1">
+              {([['en', 'English'], ['ur', 'اردو'], ['both', 'Both']] as const).map(([k, l]) => (
+                <button key={k} role="radio" aria-checked={lang === k} onClick={() => setSettings({ hadithLang: k })}
+                  className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${k === 'ur' ? 'urdu' : ''} ${lang === k ? 'bg-brand text-brand-ink shadow-sm' : 'text-muted hover:text-ink'}`}>{l}</button>
+              ))}
+            </div>
+          )}
+          {lang !== 'en' && ur.error && <p className="mb-3 text-xs text-red-500">Urdu translation couldn’t be loaded — showing English.</p>}
           <p className="mb-3 text-xs text-muted">{list.length} hadith</p>
-          <div className="space-y-4">{list.map((h) => <HadithCard key={h.hadithnumber} h={h} ar={arMap.get(h.hadithnumber)} c={c} s={s} name={meta?.name ?? c} />)}</div>
+          <div className="space-y-4">{list.map((h) => <HadithCard key={h.hadithnumber} h={h} ar={arMap.get(h.hadithnumber)} ur={lang !== 'en' ? urMap.get(h.hadithnumber) : undefined} showEn={showEn(h.hadithnumber)} c={c} s={s} name={meta?.name ?? c} />)}</div>
+          {lang !== 'en' && <p className="mt-6 text-xs text-muted">Urdu text is from the hadith-api dataset, matched to the same hadith number as the Arabic and English. The dataset does not name the Urdu translator, so for scholarly use check it against a printed edition or sunnah.com. The Arabic is the primary text.</p>}
         </>
       )}
     </div>
   )
 }
 
-function HadithCard({ h, ar, c, s, name }: { h: H; ar?: string; c: string; s: string; name: string }) {
+function HadithCard({ h, ar, ur, showEn = true, c, s, name }: { h: H; ar?: string; ur?: string; showEn?: boolean; c: string; s: string; name: string }) {
   const key = `${c}-${h.hadithnumber}`
   const saved = useLiveQuery(() => db.saved.get(`hadith:${key}`), [key])
   const ref = `${name} ${h.hadithnumber}`
+  const tr = [ur, showEn ? h.text : ''].filter(Boolean).join('\n\n')
   return (
     <article id={`h${h.hadithnumber}`} className="card p-5 md:p-6">
       <div className="flex flex-wrap items-center gap-1">
         <span className="chip me-auto text-brand">{ref}</span>
         <button className={`icon-btn size-10 ${saved ? 'text-gold' : ''}`} aria-label="Save" onClick={() => toggleSaved('hadith', key, `/hadith/${c}/${s}#h${h.hadithnumber}`)}>{saved ? <BookmarkCheck size={20} /> : <Bookmark size={20} />}</button>
-        <button className="icon-btn size-10" aria-label="Copy" onClick={() => navigator.clipboard?.writeText(`${ar ? ar + '\n\n' : ''}${h.text}\n— ${ref}`)}><Copy size={20} /></button>
+        <button className="icon-btn size-10" aria-label="Copy" onClick={() => navigator.clipboard?.writeText(`${ar ? ar + '\n\n' : ''}${tr}\n— ${ref}`)}><Copy size={20} /></button>
         {ar && <button className="icon-btn size-10" aria-label="Share as image" onClick={() => shareAyahImage(ar.length > 500 ? ar.slice(0, 500) + '…' : ar, h.text.length > 400 ? h.text.slice(0, 400) + '…' : h.text, ref)}><Image size={20} /></button>}
-        <WhatsAppButton body={h.text.length > 1200 ? h.text.slice(0, 1200) + '…' : h.text} refText={ref} path={`/hadith/${c}/${s}#h${h.hadithnumber}`} />
+        <WhatsAppButton body={tr.length > 1200 ? tr.slice(0, 1200) + '…' : tr} refText={ref} path={`/hadith/${c}/${s}#h${h.hadithnumber}`} />
         <ReportButton item={`Hadith: ${ref}`} />
       </div>
       {ar && <p className="quran mt-4 text-right text-[22px] leading-[2.1]">{ar}</p>}
-      <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed">{h.text}</p>
+      {ur && <p dir="rtl" lang="ur" className="urdu mt-3 whitespace-pre-line text-right text-[18px] leading-[2]">{ur}</p>}
+      {showEn && <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed">{h.text}</p>}
       {h.grades && h.grades.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-1.5">
           {h.grades.map((g) => (

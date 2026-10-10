@@ -51,7 +51,7 @@ export default defineConfig({
           },
           {
             // Hadith sections — fetched on demand, kept for offline re-reading.
-            urlPattern: /^https:\/\/cdn\.jsdelivr\.net\/gh\/fawazahmed0\/hadith-api@1\/.*\.json$/,
+            urlPattern: /^https:\/\/(cdn\.jsdelivr\.net\/gh\/fawazahmed0\/hadith-api@1|raw\.githubusercontent\.com\/fawazahmed0\/hadith-api\/1)\/.*\.json$/,
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'hadith', cacheableResponse: { statuses: [0, 200] }, expiration: { maxEntries: 8000 } },
           },
