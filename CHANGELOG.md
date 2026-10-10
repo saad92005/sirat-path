@@ -1,0 +1,41 @@
+# Changelog
+
+Notable changes to Sirat Path. Dates are deployment dates; each push to `main` deploys to production.
+
+## 2026-10-10
+### Added
+- **Urdu hadith translations** with an English / اردو / Both switch for Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasaʾi, Ibn Majah and Muwatta. Included in offline downloads.
+- Project documentation: PRD, SRS, design, data model, deployment, privacy policy, terms of use, security policy, test plan, project report, `CLAUDE.md`, license.
+### Fixed
+- **Sunan an-Nasaʾi and Ibn Majah failed to load**, because jsDelivr returned 403 for that package. Hadith now fall back to the GitHub mirror.
+
+## 2026-10-08
+### Added
+- English / Urdu / Both / Off translation switch in the Quran reader, with a choice of Urdu translator.
+- Prominent green WhatsApp share buttons on ayahs, hadith, duas and Home. Bigger action icons.
+- SEO: per-page titles and descriptions, Open Graph and Twitter previews, JSON-LD, `sitemap.xml`, `robots.txt`.
+- Install banner (Android prompt and iOS steps) with a share invitation.
+- Vercel Web Analytics.
+- Automatic cloud sync (start, focus, reconnect, periodic, after edits).
+### Fixed
+- Blank white screen after returning from WhatsApp. WhatsApp now opens directly through the app scheme instead of leaving a wa.me tab behind.
+- Overflow of dua actions on narrow screens. Responsive fixes on prayer reminders, Qibla and Ask.
+
+## 2026-10-07
+### Added
+- Offline download manager for hadith collections, translations and recitation packs. Persistent storage, plus offline fallbacks for Ask, Hadith and the Qibla map.
+- Qibla: true-north correction (WMM 2025), tilt and rotation compensation, turn guidance, and a great-circle map.
+- New app icon; 3D feature icons (Fluent Emoji, MIT).
+### Fixed
+- Sheets clipped inside cards (they now render through a portal).
+- Supabase table grants for the `authenticated` role.
+
+## 2026-10-06
+### Added
+- First release: offline-first Quran PWA (reader, audio, search, prayer times, Qibla, duas, dhikr, khatm).
+- Today dashboard, three themes, Salah tracker, azkar, sourced duas, hadith, Learn, Ramadan, Zakat, Hajj, journal, habits, kids mode, library, and English/Urdu/Arabic UI with RTL.
+- Study tools: tajweed, word-by-word, tafsir, Urdu translations.
+- Ask Islam with citation validation; cloud AI through a secure Groq proxy; optional on-device AI.
+- Optional Supabase accounts and sync, plus an admin review queue.
+- Automatic service-worker updates for installed apps.
+- Project renamed from "Noor" to **Sirat Path**.

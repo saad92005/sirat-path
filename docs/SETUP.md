@@ -12,7 +12,7 @@ npm run data       # regenerate public/data/quran.json from data-src/
 
 ## Environment variables
 
-None are required. Copy `.env.example` to `.env` only if you want optional cloud sync.
+None are required for local development. Copy `.env.example` to `.env.local` only if you want cloud sync. `GROQ_API_KEY` (Ask, cloud mode) is a **server-only** variable: set it in Vercel and never prefix it with `VITE_`. See [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Optional: accounts & cloud sync (Supabase free tier, no credit card)
 

@@ -1,0 +1,21 @@
+Copyright (c) 2026 saad92005. All rights reserved.
+
+The source code, design and original written content of Sirat Path (including the
+courses, guides and English dua renderings in src/content/) may be viewed on GitHub
+for reference and evaluation. No permission is granted to copy, modify, publish,
+distribute, sublicense or sell them, in whole or in part, without the prior written
+permission of the copyright holder.
+
+Third-party content keeps its own licence and is NOT covered by this notice. This
+includes:
+  - Quran text and metadata: Tanzil Project, CC BY 3.0 (verbatim copies only)
+  - English translation: M. M. Pickthall, public domain
+  - Fonts: SIL Open Font License 1.1
+  - Icons: Microsoft Fluent Emoji (MIT), Lucide (ISC)
+  - Content fetched at runtime (quran.com, hadith-api, EveryAyah, OpenStreetMap,
+    Wikimedia Commons): owned by their respective authors and publishers
+See docs/DATA_SOURCES.md for the full list.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM THE USE OF THE SOFTWARE.

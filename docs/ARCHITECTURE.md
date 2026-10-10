@@ -24,16 +24,16 @@ public/data/    quran.json, generated from data-src/ by scripts/build-data.mjs
 | Kind | Where | Why |
 |---|---|---|
 | Quran text + translation | `public/data/quran.json` (precached) | One 2.2 MB file (~600 KB gzipped), no per-ayah requests |
-| Hadith | fetched per book from hadith-api, cached by Workbox | Too large to bundle; licence reasons (see DATA_SOURCES) |
+| Hadith (Arabic, English, Urdu) | fetched per book from hadith-api through `src/lib/hadithApi.ts` (jsDelivr, falling back to raw GitHub), cached by Workbox | Too large to bundle; licence reasons (see DATA_SOURCES) |
 | Audio | streamed from EveryAyah, cached on play/download | Not redistributed |
 | User data (bookmarks, notes, salah log, azkar, journal, habits, learning, Ramadan, dhikr) | IndexedDB via Dexie (`src/lib/db.ts`) | Private, offline, no account |
 | Preferences | `localStorage` (`sirat-settings`) through a `useSyncExternalStore` store | Small and synchronous |
 
-Backup/restore is a JSON export in Settings. Optional cloud sync (Supabase free tier) can be added behind the same `db` module; it is deliberately not required.
+Backup/restore is a JSON export in Settings. Optional cloud sync (Supabase free tier) runs behind the same `db` module and is deliberately not required. See [DATA_MODEL.md](DATA_MODEL.md).
 
 ## Provider abstractions
 
-- **AI** — `src/lib/ai.ts` defines `AIProvider` with `NoAIProvider` (default) and `LocalAIProvider` (WebLLM in a Web Worker, opt-in). Pipeline on the Ask page:
+- **AI** — `src/lib/ai.ts` defines `AIProvider` with `NoAIProvider` (sources only), `FreeRemoteAIProvider` (cloud, the default AI mode) and `LocalAIProvider` (WebLLM in a Web Worker, opt-in). Pipeline on the Ask page:
   question → on-device retrieval of verified ayahs (MiniSearch) → model prompted to use *only* those sources and cite `[s:a]` → **citation validation** (invented references are stripped; uncited answers are withheld) → displayed in a box labelled "AI reflection — not Quran, hadith or a ruling", with the verified sources listed separately below. The AI runtime (~6 MB) and model weights are only downloaded after the user opts in.
 - **Cloud AI (default AI mode)** — `FreeRemoteAIProvider` → Vercel function `api/ask.ts` → Groq free tier. It uses the same grounding and citation-validation pipeline; the server re-derives the source text from references. Users can switch to On-device or Sources only on the Ask page.
 - **Cloud (optional)** — `src/lib/cloud.ts` lazy-loads Supabase only when configured. Sync is two-way with last-write-wins and tombstones, using a per-record hash so only changed rows are sent; auto-increment tables get device-independent `syncKey`s. Schema and RLS: `supabase/schema.sql`.

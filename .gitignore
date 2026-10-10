@@ -6,4 +6,5 @@ tests/screens
 
 .vercel
 .env*
+!.env.example
 marketing/
